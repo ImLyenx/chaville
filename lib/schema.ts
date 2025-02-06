@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -51,4 +51,28 @@ export const verification = sqliteTable("verification", {
   expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const entreprise = sqliteTable("entreprise", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  coordonnees: text("coordonnees").notNull(),
+  date: integer({ mode: 'timestamp' }),
+  userId: integer("user_id").references(() => user.id),
+});
+
+export const images = sqliteTable("images", {
+  id: text("id").primaryKey(),
+  url: text("url").notNull(),
+  alternatif: text("alternatif").notNull(),
+  entrepriseId: integer("entreprise_id").references(() => entreprise.id),
+});
+
+export const prestation = sqliteTable("prestation", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: real("price").notNull(),
+  entrepriseId: integer("entreprise_id").references(()=> entreprise.id),
 });
