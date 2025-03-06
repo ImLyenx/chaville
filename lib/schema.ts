@@ -1,85 +1,94 @@
-import { PrimaryKey } from "drizzle-orm/mysql-core";
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import {
+  mysqlTable,
+  varchar,
+  boolean,
+  timestamp,
+  int,
+  decimal,
+  primaryKey,
+} from "drizzle-orm/mysql-core";
 
-export const user = sqliteTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+export const user = mysqlTable("user", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  emailVerified: boolean("email_verified").notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const session = sqliteTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  token: text("token").notNull().unique(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  userId: text("user_id")
+export const session = mysqlTable("session", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+  ipAddress: varchar("ip_address", { length: 255 }),
+  userAgent: varchar("user_agent", { length: 255 }),
+  userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => user.id),
 });
 
-export const account = sqliteTable("account", {
-  id: text("id").primaryKey(),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-  userId: text("user_id")
+export const account = mysqlTable("account", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  accountId: varchar("account_id", { length: 255 }).notNull(),
+  providerId: varchar("provider_id", { length: 255 }).notNull(),
+  userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => user.id),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  idToken: text("id_token"),
-  accessTokenExpiresAt: integer("access_token_expires_at", {
-    mode: "timestamp",
-  }),
-  refreshTokenExpiresAt: integer("refresh_token_expires_at", {
-    mode: "timestamp",
-  }),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  accessToken: varchar("access_token", { length: 2000 }),
+  refreshToken: varchar("refresh_token", { length: 2000 }),
+  idToken: varchar("id_token", { length: 2000 }),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: varchar("scope", { length: 255 }),
+  password: varchar("password", { length: 255 }),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const verification = sqliteTable("verification", {
-  id: text("id").primaryKey(),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }),
-  updatedAt: integer("updated_at", { mode: "timestamp" }),
+export const verification = mysqlTable("verification", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  identifier: varchar("identifier", { length: 255 }).notNull(),
+  value: varchar("value", { length: 255 }).notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at"),
 });
 
-export const entreprise = sqliteTable("entreprise", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  date: integer({ mode: 'timestamp' }),
-  userId: integer("user_id").references(() => user.id),
+export const entreprise = mysqlTable("entreprise", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 1000 }).notNull(),
+  date: timestamp("date"),
+  userId: varchar("user_id", { length: 255 }).references(() => user.id),
 });
 
-export const images = sqliteTable("images", {
-  id: text("id").primaryKey(),
-  url: text("url").notNull(),
-  alternatif: text("alternatif").notNull(),
-  entrepriseId: integer("entreprise_id").references(() => entreprise.id),
+export const images = mysqlTable("images", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  url: varchar("url", { length: 255 }).notNull(),
+  alternatif: varchar("alternatif", { length: 255 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
 });
 
-export const prestation = sqliteTable("prestation", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  price: real("price").notNull(),
-  entrepriseId: integer("entreprise_id").references(()=> entreprise.id),
+export const prestation = mysqlTable("prestation", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 1000 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
 });
 
-export const coordonnees = sqliteTable("coordonnees", {
-  id: text("id").primaryKey(),
-  type: text("type").notNull(),
-  link: text("link").notNull(),
-  entrepriseId: integer("entreprise_id").references(()=> entreprise.id),
-})
+export const coordonnees = mysqlTable("coordonnees", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  type: varchar("type", { length: 255 }).notNull(),
+  link: varchar("link", { length: 255 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
+});

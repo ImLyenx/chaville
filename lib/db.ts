@@ -1,11 +1,14 @@
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import * as schema from "./schema";
 
-export const db = drizzle({
-  connection: {
-    url: process.env.TURSO_DATABASE_URL!,
-    authToken: process.env.TURSO_AUTH_TOKEN!,
-  },
+const connection = mysql.createPool({
+  uri: process.env.MYSQL_DATABASE_URL!,
+  connectionLimit: 10,
+});
+
+export const db = drizzle(connection, {
   schema,
+  mode: "default",
 });
