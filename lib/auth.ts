@@ -11,6 +11,7 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
+    requireEmailVerification: true,
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }, request) => {
