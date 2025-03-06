@@ -6,14 +6,14 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:push": "pnpm drizzle-kit push"
   },
   "dependencies": {
-    "@libsql/client": "^0.14.0",
-    "@libsql/kysely-libsql": "^0.4.1",
     "better-auth": "^1.1.16",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.2",
+    "mysql2": "^3.9.2",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
