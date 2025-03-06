@@ -31,10 +31,19 @@ export default function cesu() {
                 <p className="m-5 w-2/5">
                 Dès que vous faites appel à un salarié à votre domicile, vous avez l’obligation de le déclarer. Votre déclaration permet au Cesu de calculer les cotisations, d’établir et d’adresser le bulletin de salaire à votre salarié. Ces cotisations sont les principales bases du financement solidaire de la <a className="italic hover:bg-slate-300 p-2 transition duration-150 rounded-lg" href="https://www.cesu.urssaf.fr/info/accueil/lexique.html?letter=S#securite-sociale">Sécurité sociale.</a>
                 </p>
-                <p>En tant que salarié, être déclaré vous garantit des droits et vous permet de bénéficier d’une couverture sociale : assurance maladie, maternité, <a className="italic hover:bg-slate-300 p-2 transition duration-150 rounded-lg" href="https://www.cesu.urssaf.fr/info/accueil/lexique.html?letter=R#retraite">retraite</a>, accident du travail, chômage… Ne pas être déclaré, c’est vous pénaliser dans l’obtention de vos droits sociaux.
+                <p className="m-5 w-2/5">En tant que salarié, être déclaré vous garantit des droits et vous permet de bénéficier d’une couverture sociale : assurance maladie, maternité, <a className="italic hover:bg-slate-300 p-2 transition duration-150 rounded-lg" href="https://www.cesu.urssaf.fr/info/accueil/lexique.html?letter=R#retraite">retraite</a>, accident du travail, chômage… Ne pas être déclaré, c’est vous pénaliser dans l’obtention de vos droits sociaux.
                 Ne pas déclarer, établir une fausse déclaration ou ne pas déclarer toutes les heures effectuées, c’est encourir une sanction pénale et civile.
                 </p>
+
+                <h2 className="font-bold">Les avantages</h2>
+                <p className="m-5 w-2/5">
+                Dès lors que vous établissez une déclaration, l'Urssaf service Cesu s’assure des <a className="italic hover:bg-slate-300 p-2 transition duration-150 rounded-lg" href="https://www.urssaf.fr/accueil/outils-documentation/taux-baremes.html">taux de cotisations</a> en vigueur et réalise l’ensemble des opérations. Le Cesu, c’est plus de tranquillité. Plus besoin de suivre les évolutions des taux, ils sont mis à jour automatiquement en fonction des nouvelles réglementations.
+                </p>
+                <p className="m-5 w-2/5">
+                Le Cesu vous offre aussi plus de fiabilité. Les<a className="italic hover:bg-slate-300 p-2 transition duration-150 rounded-lg" href="https://www.cesu.urssaf.fr/info/accueil/lexique.html?letter=C#cotisations-patronales">cotisations patronales</a>et salariales sont calculées et vérifiées par un système performant et éprouvé depuis plus de 20 ans. Avec le Cesu, vous évitez toute erreur de calcul.</p>
+
                 <br></br>
+
                 <h2 className="font-bold">Pour plus d’informations, veuillez regarder le site web : <a className="italic hover:bg-slate-300 p-2 transition duration-150 rounded-lg" href="https://www.cesu.urssaf.fr/info/accueil/s-informer-sur-le-cesu/tout-savoir/c-est-quoi-pour-qui.html">S'informer sur le CESU</a></h2>
             </div>
         </section>
