@@ -6,6 +6,7 @@ import {
   int,
   decimal,
   primaryKey,
+  text,
 } from "drizzle-orm/mysql-core";
 
 import { user } from "@/auth-schema";
@@ -43,6 +44,16 @@ export const coordonnees = mysqlTable("coordonnees", {
   id: varchar("id", { length: 255 }).primaryKey(),
   type: varchar("type", { length: 255 }).notNull(),
   link: varchar("link", { length: 255 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
+});
+
+export const blog = mysqlTable("blog", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  isWrittenByAdmin: boolean("is_written_by_admin").notNull().default(false),
   entrepriseId: varchar("entreprise_id", { length: 255 }).references(
     () => entreprise.id
   ),

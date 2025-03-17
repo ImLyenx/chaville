@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Trash2,
   UserCog,
+  Search,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -25,6 +26,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { SearchForms } from "./SearchForms";
 import { useEffect, useState, Fragment } from "react";
@@ -59,6 +70,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const searchParams = useSearchParams();
   const searchedEmail = searchParams.get("email");
   const searchedName = searchParams.get("name");
@@ -227,128 +239,135 @@ export default function UsersPage() {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Gestion des Utilisateurs</CardTitle>
-            <SearchForms
-              initialEmail={searchedEmail || undefined}
-              initialName={searchedName || undefined}
-            />
-          </CardHeader>
-          <CardContent>
-            <p className="text-center py-4">Chargement...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!users || users.length === 0) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Gestion des Utilisateurs</CardTitle>
-            <SearchForms
-              initialEmail={searchedEmail || undefined}
-              initialName={searchedName || undefined}
-            />
-          </CardHeader>
-          <CardContent>
-            <p className="text-center py-4">Aucun utilisateur trouvé</p>
-            {renderPagination()}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Gestion des Utilisateurs</CardTitle>
-          <SearchForms
-            initialEmail={searchedEmail || undefined}
-            initialName={searchedName || undefined}
-          />
+          {/* Desktop search form */}
+          <div className="hidden md:block">
+            <SearchForms
+              initialEmail={searchedEmail || undefined}
+              initialName={searchedName || undefined}
+            />
+          </div>
+          {/* Mobile search button */}
+          <div className="md:hidden">
+            <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+              <DrawerTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Rechercher des utilisateurs</DrawerTitle>
+                  <DrawerDescription>
+                    Utilisez les champs ci-dessous pour filtrer les utilisateurs
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="p-4">
+                  <SearchForms
+                    initialEmail={searchedEmail || undefined}
+                    initialName={searchedName || undefined}
+                  />
+                </div>
+                <DrawerFooter>
+                  <DrawerClose asChild>
+                    <Button variant="outline">Fermer</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user: User) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name || "Sans nom"}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        user.role === "admin" ? "destructive" : "secondary"
-                      }
-                    >
-                      {user.role === "admin" ? "Administrateur" : "Utilisateur"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.banned ? "destructive" : "default"}>
-                      {user.banned ? "Banni" : "Actif"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <UserCog className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() =>
-                            handleRoleChange(
-                              user.id,
-                              user.role === "admin" ? "user" : "admin"
-                            )
+          {loading ? (
+            <p className="text-center py-4">Chargement...</p>
+          ) : !users || users.length === 0 ? (
+            <p className="text-center py-4">Aucun utilisateur trouvé</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Rôle</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user: User) => (
+                    <TableRow key={user.id}>
+                      <TableCell>{user.name || "Sans nom"}</TableCell>
+                      <TableCell className="max-w-[200px] truncate">
+                        {user.email}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            user.role === "admin" ? "destructive" : "secondary"
                           }
                         >
-                          <ShieldCheck className="mr-2 h-4 w-4" />
                           {user.role === "admin"
-                            ? "Définir comme Utilisateur"
-                            : "Définir comme Admin"}
-                        </DropdownMenuItem>
-                        {user.banned ? (
-                          <DropdownMenuItem
-                            onClick={() => handleBanUser(user.id, false)}
-                          >
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                            Réactiver l'Utilisateur
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={() => handleBanUser(user.id, true)}
-                          >
-                            <Ban className="mr-2 h-4 w-4" />
-                            Bannir l'Utilisateur
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                            ? "Administrateur"
+                            : "Utilisateur"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={user.banned ? "destructive" : "default"}
+                        >
+                          {user.banned ? "Banni" : "Actif"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <UserCog className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleRoleChange(
+                                  user.id,
+                                  user.role === "admin" ? "user" : "admin"
+                                )
+                              }
+                            >
+                              <ShieldCheck className="mr-2 h-4 w-4" />
+                              {user.role === "admin"
+                                ? "Définir comme Utilisateur"
+                                : "Définir comme Admin"}
+                            </DropdownMenuItem>
+                            {user.banned ? (
+                              <DropdownMenuItem
+                                onClick={() => handleBanUser(user.id, false)}
+                              >
+                                <RefreshCw className="mr-2 h-4 w-4" />
+                                Réactiver l'Utilisateur
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                onClick={() => handleBanUser(user.id, true)}
+                              >
+                                <Ban className="mr-2 h-4 w-4" />
+                                Bannir l'Utilisateur
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
           {renderPagination()}
         </CardContent>
       </Card>

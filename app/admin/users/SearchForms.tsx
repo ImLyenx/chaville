@@ -33,7 +33,7 @@ export function SearchForms({ initialEmail, initialName }: SearchFormsProps) {
   };
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex md:flex-row flex-col items-center gap-4">
       <div className="relative">
         <Mail className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
