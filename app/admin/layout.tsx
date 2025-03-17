@@ -10,7 +10,7 @@ import {
   SidebarProvider,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { Users, Settings, Home, Loader2 } from "lucide-react";
+import { Users, Settings, Home, Loader2, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -70,6 +70,16 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/admin/users">
                     <Users className="h-4 w-4" />
                     Utilisateurs
+                  </Link>
+                </Button>
+                <Button
+                  variant={pathname === "/admin/blog" ? "secondary" : "ghost"}
+                  className="w-full justify-start gap-2"
+                  asChild
+                >
+                  <Link href="/admin/blog">
+                    <Paperclip className="h-4 w-4" />
+                    Blog
                   </Link>
                 </Button>
               </div>
