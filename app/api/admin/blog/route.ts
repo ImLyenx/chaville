@@ -7,7 +7,7 @@ import { eq, sql } from "drizzle-orm";
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
-    if (!session?.user?.role?.includes("admin")) {
+    if (!session?.user?.role === "admin") {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
