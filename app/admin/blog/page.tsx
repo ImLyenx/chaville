@@ -245,8 +245,10 @@ export default function BlogPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="icon">
-                            <Pencil className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" asChild>
+                            <Link href={`/admin/blog/${blog.id}`}>
+                              <Pencil className="h-4 w-4" />
+                            </Link>
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>

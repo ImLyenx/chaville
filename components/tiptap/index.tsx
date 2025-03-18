@@ -4,7 +4,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   Bold,
   Italic,
@@ -20,12 +20,8 @@ import {
   ListOrdered,
   Underline as UnderlineIcon,
 } from "lucide-react";
-import EditorUploadButton from "./editor-upload-button";
-
-interface TiptapProps {
-  initialContent?: string;
-  onUpdate?: (content: string) => void;
-}
+import EditorUploadButton from "../editor-upload-button";
+import { publishPost } from "./action";
 
 const MenuBar = ({ editor }: { editor: any }) => {
   if (!editor) {
@@ -185,12 +181,15 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <EditorUploadButton onUploadComplete={addImage} />
           </div>
         </div>
+
+        {/* Publish button */}
+        <Button onClick={() => publishPost(editor.getHTML())}>Publier</Button>
       </div>
     </div>
   );
 };
 
-const Tiptap = ({ initialContent, onUpdate }: TiptapProps) => {
+const Tiptap = () => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -205,14 +204,11 @@ const Tiptap = ({ initialContent, onUpdate }: TiptapProps) => {
         },
       }),
     ],
-    content: initialContent || "<h2>Bonjour !</h2><p>Votre texte ici</p>",
+    content: "<h2>Bonjour !</h2><p>Votre texte ici</p>",
     editorProps: {
       attributes: {
         class: "prose prose-sm focus:outline-none p-4",
       },
-    },
-    onUpdate: ({ editor }) => {
-      onUpdate?.(editor.getHTML());
     },
   });
 
