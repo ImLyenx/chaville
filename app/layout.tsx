@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Kanit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 
@@ -7,7 +7,12 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
 
-const inter = Inter({ subsets: ["latin"] });
+const kanit = Kanit({
+  variable: "--font-kanit",
+  subsets: ["latin"],
+  weight: "200",
+});
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,9 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <NextSSRPlugin
-          /**
+      <body
+        className={` ${kanit.className} antialiased text-foreground`}
+      >
            * The `extractRouterConfig` will extract **only** the route configs
            * from the router to prevent additional information from being
            * leaked to the client. The data passed to the client is the same
@@ -31,7 +36,6 @@ export default function RootLayout({
            */
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
-        {children}
         <Toaster />
       </body>
     </html>
