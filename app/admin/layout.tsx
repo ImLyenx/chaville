@@ -17,7 +17,9 @@ import { usePathname } from "next/navigation";
 
 function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
   const { data: session, error } = authClient.useSession();
-  console.log(session);
+  if (process.env.NODE_ENV === "development") {
+    console.log(session);
+  }
   if (error) {
     redirect("/");
   }
