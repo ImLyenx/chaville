@@ -3,17 +3,22 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import Underline from "@tiptap/extension-underline";
 import { Button } from "./ui/button";
 import {
   Bold,
   Italic,
   List,
-  Heading1,
   Heading2,
+  Heading3,
   Quote,
   Code,
   Undo,
   Redo,
+  Strikethrough,
+  Minus,
+  ListOrdered,
+  Underline as UnderlineIcon,
 } from "lucide-react";
 import EditorUploadButton from "./editor-upload-button";
 
@@ -30,6 +35,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
   return (
     <div className="border-b border-gray-200 bg-white p-2 flex gap-2 flex-wrap items-center">
+      {/* Text style buttons */}
       <Button
         variant="ghost"
         size="sm"
@@ -49,13 +55,32 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={
-          editor.isActive("heading", { level: 1 }) ? "bg-gray-200" : ""
-        }
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        className={editor.isActive("underline") ? "bg-gray-200" : ""}
       >
-        <Heading1 className="h-4 w-4" />
+        <UnderlineIcon className="h-4 w-4" />
       </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        className={editor.isActive("strike") ? "bg-gray-200" : ""}
+      >
+        <Strikethrough className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        className={editor.isActive("code") ? "bg-gray-200" : ""}
+      >
+        <Code className="h-4 w-4" />
+      </Button>
+
+      {/* Divider */}
+      <div className="w-px h-4 bg-gray-200 mx-1" />
+
+      {/* Heading buttons */}
       <Button
         variant="ghost"
         size="sm"
@@ -69,11 +94,36 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <Button
         variant="ghost"
         size="sm"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        className={
+          editor.isActive("heading", { level: 3 }) ? "bg-gray-200" : ""
+        }
+      >
+        <Heading3 className="h-4 w-4" />
+      </Button>
+
+      {/* Divider */}
+      <div className="w-px h-4 bg-gray-200 mx-1" />
+
+      {/* List buttons */}
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive("bulletList") ? "bg-gray-200" : ""}
       >
         <List className="h-4 w-4" />
       </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        className={editor.isActive("orderedList") ? "bg-gray-200" : ""}
+      >
+        <ListOrdered className="h-4 w-4" />
+      </Button>
+
+      {/* Block style buttons */}
       <Button
         variant="ghost"
         size="sm"
@@ -85,11 +135,23 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => editor.chain().focus().toggleCode().run()}
-        className={editor.isActive("code") ? "bg-gray-200" : ""}
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        className={editor.isActive("codeBlock") ? "bg-gray-200" : ""}
       >
         <Code className="h-4 w-4" />
       </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <Minus className="h-4 w-4" />
+      </Button>
+
+      {/* Divider */}
+      <div className="w-px h-4 bg-gray-200 mx-1" />
+
+      {/* History buttons */}
       <Button
         variant="ghost"
         size="sm"
@@ -106,6 +168,8 @@ const MenuBar = ({ editor }: { editor: any }) => {
       >
         <Redo className="h-4 w-4" />
       </Button>
+
+      {/* Image upload */}
       <div className="flex items-center gap-2 border-l pl-2 ml-2">
         <EditorUploadButton onUploadComplete={addImage} />
       </div>
@@ -116,18 +180,22 @@ const MenuBar = ({ editor }: { editor: any }) => {
 const Tiptap = () => {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        heading: {
+          levels: [2, 3], // Only allow h2 and h3
+        },
+      }),
+      Underline,
       Image.configure({
         HTMLAttributes: {
           class: "rounded-lg max-w-full h-auto",
         },
       }),
     ],
-    content: "",
+    content: "<h2>Bonjour !</h2><p>Votre texte ici</p>",
     editorProps: {
       attributes: {
-        class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none p-4",
+        class: "prose prose-sm focus:outline-none p-4",
       },
     },
   });
