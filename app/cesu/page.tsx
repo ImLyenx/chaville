@@ -8,7 +8,7 @@ export default function cesu() {
                         <p>Consommer Local - </p>
                         <p className="font-bold">Chaville</p>
                     </div>
-                    <div className="flex flex-column"> 
+                    <div className="flex flex-col"> 
                         <div className="relative">
                             <input 
                                 className="p-2 w-96 rounded-full mr-5 pl-10" 
