@@ -21,6 +21,11 @@ export default function NewBlogPage() {
       return;
     }
 
+    if (!content.trim()) {
+      toast.error("Le contenu est obligatoire");
+      return;
+    }
+
     try {
       const response = await fetch("/api/admin/blog", {
         method: "POST",

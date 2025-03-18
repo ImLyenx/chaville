@@ -7,7 +7,7 @@ import { eq, sql } from "drizzle-orm";
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
-    if (!session?.user?.role === "admin") {
+    if (!(session?.user?.role === "admin")) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -15,6 +15,10 @@ export async function POST(req: Request) {
 
     if (!title?.trim()) {
       return Response.json({ error: "Title is required" }, { status: 400 });
+    }
+
+    if (!content?.trim()) {
+      return Response.json({ error: "Content is required" }, { status: 400 });
     }
 
     const [newBlogId] = await db
