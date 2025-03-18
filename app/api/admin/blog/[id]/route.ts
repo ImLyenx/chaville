@@ -52,6 +52,7 @@ export async function PUT(
         title: title.trim(),
         content,
         isWrittenByAdmin,
+        isValidated: isWrittenByAdmin,
         updatedAt: new Date(),
       })
       .where(eq(blog.id, parseInt(params.id)));
@@ -63,6 +64,24 @@ export async function PUT(
     return NextResponse.json(updatedBlog);
   } catch (error) {
     console.error("Error updating blog post:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session || !session.user || session.user.role !== "admin") {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  try {
+    await db.delete(blog).where(eq(blog.id, parseInt(params.id)));
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("Error deleting blog post:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

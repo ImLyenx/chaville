@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Check, X } from "lucide-react";
 import { useEffect, useState, Fragment } from "react";
 import {
   Pagination,
@@ -42,6 +42,7 @@ interface Blog {
   title: string;
   content: string;
   isWrittenByAdmin: boolean;
+  isValidated: boolean;
   entrepriseId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -58,7 +59,6 @@ export default function BlogPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
-  const [deletingBlogId, setDeletingBlogId] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
 
@@ -94,7 +94,7 @@ export default function BlogPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`/api/admin/blog?id=${id}`, {
+      const response = await fetch(`/api/admin/blog/${id}`, {
         method: "DELETE",
       });
 
@@ -107,8 +107,32 @@ export default function BlogPage() {
     } catch (error) {
       console.error("Error deleting blog:", error);
       toast.error("Erreur lors de la suppression de l'article");
-    } finally {
-      setDeletingBlogId(null);
+    }
+  };
+
+  const handleValidate = async (id: number, isValidated: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/blog/${id}/validate`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isValidated }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update validation status");
+      }
+
+      toast.success(
+        isValidated
+          ? "Article validé avec succès"
+          : "Article marqué comme non validé"
+      );
+      fetchBlogs(); // Refresh the list
+    } catch (error) {
+      console.error("Error updating validation status:", error);
+      toast.error("Erreur lors de la mise à jour du statut");
     }
   };
 
@@ -213,6 +237,7 @@ export default function BlogPage() {
                   <TableRow>
                     <TableHead>Titre</TableHead>
                     <TableHead>Auteur</TableHead>
+                    <TableHead>Statut</TableHead>
                     <TableHead className="hidden md:table-cell">
                       Date de création
                     </TableHead>
@@ -237,6 +262,14 @@ export default function BlogPage() {
                           {blog.isWrittenByAdmin ? "Admin" : "Entreprise"}
                         </Badge>
                       </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={blog.isValidated ? "success" : "warning"}
+                          className="w-fit"
+                        >
+                          {blog.isValidated ? "Validé" : "En attente"}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {formatDate(blog.createdAt)}
                       </TableCell>
@@ -250,6 +283,21 @@ export default function BlogPage() {
                               <Pencil className="h-4 w-4" />
                             </Link>
                           </Button>
+                          {!blog.isWrittenByAdmin && (
+                            <Button
+                              variant={blog.isValidated ? "ghost" : "outline"}
+                              size="icon"
+                              onClick={() =>
+                                handleValidate(blog.id, !blog.isValidated)
+                              }
+                            >
+                              {blog.isValidated ? (
+                                <X className="h-4 w-4" />
+                              ) : (
+                                <Check className="h-4 w-4" />
+                              )}
+                            </Button>
+                          )}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon">

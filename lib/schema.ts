@@ -50,13 +50,12 @@ export const coordonnees = mysqlTable("coordonnees", {
 });
 
 export const blog = mysqlTable("blog", {
-  id: int("id").autoincrement().primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
+  id: int("id").primaryKey().autoincrement(),
+  title: text("title").notNull(),
   content: text("content").notNull(),
   isWrittenByAdmin: boolean("is_written_by_admin").notNull().default(false),
-  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
-    () => entreprise.id
-  ),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
+  isValidated: boolean("is_validated").notNull().default(false),
+  entrepriseId: varchar("entreprise_id", { length: 36 }),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
