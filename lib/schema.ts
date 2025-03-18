@@ -1,85 +1,61 @@
-import { PrimaryKey } from "drizzle-orm/mysql-core";
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import {
+  mysqlTable,
+  varchar,
+  boolean,
+  timestamp,
+  int,
+  decimal,
+  primaryKey,
+  text,
+} from "drizzle-orm/mysql-core";
 
-export const user = sqliteTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+import { user } from "@/auth-schema";
+
+export * from "@/auth-schema";
+
+export const entreprise = mysqlTable("entreprise", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 1000 }).notNull(),
+  date: timestamp("date"),
+  userId: varchar("user_id", { length: 255 }).references(() => user.id),
 });
 
-export const session = sqliteTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  token: text("token").notNull().unique(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id),
+export const images = mysqlTable("images", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  url: varchar("url", { length: 255 }).notNull(),
+  alternatif: varchar("alternatif", { length: 255 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
 });
 
-export const account = sqliteTable("account", {
-  id: text("id").primaryKey(),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  idToken: text("id_token"),
-  accessTokenExpiresAt: integer("access_token_expires_at", {
-    mode: "timestamp",
-  }),
-  refreshTokenExpiresAt: integer("refresh_token_expires_at", {
-    mode: "timestamp",
-  }),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+export const prestation = mysqlTable("prestation", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 1000 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
 });
 
-export const verification = sqliteTable("verification", {
-  id: text("id").primaryKey(),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }),
-  updatedAt: integer("updated_at", { mode: "timestamp" }),
+export const coordonnees = mysqlTable("coordonnees", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  type: varchar("type", { length: 255 }).notNull(),
+  link: varchar("link", { length: 255 }).notNull(),
+  entrepriseId: varchar("entreprise_id", { length: 255 }).references(
+    () => entreprise.id
+  ),
 });
 
-export const entreprise = sqliteTable("entreprise", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  date: integer({ mode: 'timestamp' }),
-  userId: integer("user_id").references(() => user.id),
+export const blog = mysqlTable("blog", {
+  id: int("id").primaryKey().autoincrement(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  isWrittenByAdmin: boolean("is_written_by_admin").notNull().default(false),
+  isValidated: boolean("is_validated").notNull().default(false),
+  entrepriseId: varchar("entreprise_id", { length: 36 }),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
-
-export const images = sqliteTable("images", {
-  id: text("id").primaryKey(),
-  url: text("url").notNull(),
-  alternatif: text("alternatif").notNull(),
-  entrepriseId: integer("entreprise_id").references(() => entreprise.id),
-});
-
-export const prestation = sqliteTable("prestation", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  price: real("price").notNull(),
-  entrepriseId: integer("entreprise_id").references(()=> entreprise.id),
-});
-
-export const coordonnees = sqliteTable("coordonnees", {
-  id: text("id").primaryKey(),
-  type: text("type").notNull(),
-  link: text("link").notNull(),
-  entrepriseId: integer("entreprise_id").references(()=> entreprise.id),
-})
