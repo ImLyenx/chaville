@@ -8,7 +8,6 @@ export const sendEmail = async (
   to: string,
   params: Record<string, any>
 ) => {
-  console.log(type, to, params);
   if (type === "email-verif") {
     const { data, error } = await resend.emails.send({
       from: `Chaville Entrepreneurs <${process.env.RESEND_FROM_EMAIL}>`,
