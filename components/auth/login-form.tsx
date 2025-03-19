@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const loginFormSchema = z.object({
   email: z.string().email({
@@ -43,7 +45,10 @@ export function LoginForm() {
     },
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   async function onSubmit(data: LoginFormValues) {
+    setIsLoading(true);
     const response = await authClient.signIn.email(data);
     if (response.error) {
       toast.error(response.error.message);
@@ -51,6 +56,7 @@ export function LoginForm() {
     if (response.data) {
       router.push("/");
     }
+    setIsLoading(false);
   }
 
   return (
@@ -82,8 +88,12 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-accent">
-          Se connecter
+        <Button type="submit" className="w-full bg-accent" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            "Se connecter"
+          )}
         </Button>
         <div className="text-center text-sm">
           <Separator className="my-6" />

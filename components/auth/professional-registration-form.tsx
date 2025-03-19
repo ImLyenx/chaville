@@ -19,6 +19,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const professionalFormSchema = z.object({
   companyName: z.string().min(2, {
@@ -44,6 +49,7 @@ const professionalFormSchema = z.object({
 type ProfessionalFormValues = z.infer<typeof professionalFormSchema>;
 
 export function ProfessionalRegistrationForm() {
+  const router = useRouter();
   const form = useForm<ProfessionalFormValues>({
     resolver: zodResolver(professionalFormSchema),
     defaultValues: {
@@ -56,9 +62,18 @@ export function ProfessionalRegistrationForm() {
     },
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   async function onSubmit(data: ProfessionalFormValues) {
-    // TODO: Implement registration logic
-    console.log(data);
+    setIsLoading(true);
+    const response = await authClient.signUp.email(data);
+    if (response.error) {
+      toast.error(response.error.message);
+    } else {
+      toast.success("Compte créé avec succès");
+      router.push("/success");
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -154,8 +169,12 @@ export function ProfessionalRegistrationForm() {
           )}
         />
 
-        <Button type="submit" className="w-full bg-accent">
-          Créer mon compte professionnel
+        <Button type="submit" className="w-full bg-accent" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            "Créer mon compte professionnel"
+          )}
         </Button>
         <div className="text-center text-sm">
           <Separator className="my-6" />

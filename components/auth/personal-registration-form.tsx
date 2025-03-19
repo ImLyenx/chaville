@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +18,10 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const personalFormSchema = z.object({
   name: z.string().min(2, {
@@ -36,6 +41,7 @@ const personalFormSchema = z.object({
 type PersonalFormValues = z.infer<typeof personalFormSchema>;
 
 export function PersonalRegistrationForm() {
+  const router = useRouter();
   const form = useForm<PersonalFormValues>({
     resolver: zodResolver(personalFormSchema),
     defaultValues: {
@@ -46,9 +52,22 @@ export function PersonalRegistrationForm() {
     },
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   async function onSubmit(data: PersonalFormValues) {
-    // TODO: Implement registration logic
-    console.log(data);
+    if (data.password !== data.confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    setIsLoading(true);
+    const response = await authClient.signUp.email(data);
+    if (response.error) {
+      toast.error(response.error.message);
+    } else {
+      toast.success("Compte créé avec succès");
+      router.push("/success");
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -107,8 +126,12 @@ export function PersonalRegistrationForm() {
           )}
         />
 
-        <Button type="submit" className="w-full bg-accent">
-          S'inscrire
+        <Button type="submit" className="w-full bg-accent" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            "S'inscrire"
+          )}
         </Button>
         <div className="text-center text-sm">
           <Separator className="my-6" />
