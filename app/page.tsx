@@ -1,59 +1,51 @@
-"use client";
+import Image from "next/image";
+import { CarouselOne } from "./carousel_1";
+import { Button } from "@/components/ui/button";
 
-import { authClient } from "@/lib/auth-client";
-
-export default function Home() {
-  const {
-    data: sessionData,
-    error: sessionError,
-    isPending: isSessionPending,
-    refetch: refetchSession,
-  } = authClient.useSession();
-
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email: string = formData.get("email") as string;
-    const name: string = formData.get("name") as string;
-    const password: string = formData.get("password") as string;
-    const { data, error } = await authClient.signUp.email({
-      email,
-      name,
-      password,
-    });
-
-    if (error) {
-      console.error("Sign up error:", error);
-    } else {
-      console.log("Sign up successful:", data);
-    }
-  };
-
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email: string = formData.get("email") as string;
-    const password: string = formData.get("password") as string;
-    const { data, error } = await authClient.signIn.email({
-      email,
-      password,
-    });
-  };
+export default function homepage() {
   return (
-    <div>
-      {sessionData?.user?.email}
-      <form className="flex flex-col gap-4 max-w-96" onSubmit={handleSignUp}>
-        <input type="email" name="email" required />
-        <input type="text" name="name" required />
-        <input type="password" name="password" required />
-        <button type="submit">Sign Up</button>
-      </form>
-      <form className="flex flex-col gap-4 max-w-96" onSubmit={handleSignIn}>
-        <input type="email" name="email" required />
-        <input type="password" name="password" required />
-        <button type="submit">Sign In</button>
-      </form>
-      <button onClick={() => authClient.signOut()}>Sign Out</button>
-    </div>
-  );
+    <><section className="m-10">
+      <div className="bg-[#155093] p-5 rounded-full flex flex-row justify-between">
+        <div className="text-white flex flex-row mt-2">
+          <p>Consommer Local - </p>
+          <p className="font-bold">Chaville</p>
+        </div>
+        <div className="flex">
+          <div className="relative">
+            <input
+              className="p-2 w-96 rounded-full mr-5 pl-10"
+              type="text"
+              placeholder="Rechercher des commerçants" />
+            <Image
+              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+              src="/magnifying-glass-solid.svg"
+              alt="Search icon"
+              width={15}
+              height={15}
+              priority />
+          </div>
+          <button className=" w-32  bg-white p-2 rounded-full">Compte ▼</button>
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center mt-10">
+        <Image
+          src="/decouvrir-commercant.png"
+          alt="Search icon"
+          width={1500}
+          height={1000}
+          priority />
+      </div>
+
+      <div>
+        <h1 className="font-bold text-3xl mt-16 mb-5">Actualités</h1>
+      </div>
+      <CarouselOne />
+
+      <div className="flex justify-between">
+        <h1 className="font-bold text-3xl mt-16 mb-5">Catégories</h1>
+        <Button></Button>
+      </div>
+    </section></>
+  )
 }
