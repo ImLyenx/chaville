@@ -1,16 +1,25 @@
 import Image from "next/image";
 import { CarouselOne } from "./carousel_1";
 import { Button } from "@/components/ui/button";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "./mode-toggle";
 
 export default function homepage() {
   return (
-    <><section className="m-10">
+    <ThemeProvider
+    attribute="class"
+    defaultTheme="system"
+    enableSystem
+    disableTransitionOnChange
+    >
+    <section className="m-10">
       <div className="bg-[#155093] p-5 rounded-full flex flex-row justify-between">
         <div className="text-white flex flex-row mt-2">
           <p>Consommer Local - </p>
           <p className="font-bold">Chaville</p>
         </div>
-        <div className="flex">
+        <div className="flex gap-5">
+          <ModeToggle />
           <div className="relative">
             <input
               className="p-2 w-96 rounded-full mr-5 pl-10"
@@ -24,7 +33,7 @@ export default function homepage() {
               height={15}
               priority />
           </div>
-          <button className=" w-32  bg-white p-2 rounded-full">Compte ▼</button>
+          <button className=" w-32 bg-white p-2 rounded-full dark:bg-black ">Compte ▼</button>
         </div>
       </div>
 
@@ -46,6 +55,7 @@ export default function homepage() {
         <h1 className="font-bold text-3xl mt-16 mb-5">Catégories</h1>
         <Button></Button>
       </div>
-    </section></>
-  )
+    </section>
+    </ThemeProvider>
+  );
 }
