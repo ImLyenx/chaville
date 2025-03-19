@@ -7,11 +7,6 @@ import { eq } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { name, description, userId, siret, sector, logo } = body;
 
@@ -25,7 +20,7 @@ export async function POST(request: Request) {
 
     const enterpriseId = uuidv4();
 
-    // Create the enterprise record
+    // Create the enterprise record with isValidated set to false by default
     await db.insert(entreprise).values({
       id: enterpriseId,
       name,
@@ -34,6 +29,9 @@ export async function POST(request: Request) {
       siret,
       sector,
       logo,
+      isValidated: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     // Fetch the created enterprise
