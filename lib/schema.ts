@@ -17,8 +17,11 @@ export const entreprise = mysqlTable("entreprise", {
   id: varchar("id", { length: 255 }).primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   description: varchar("description", { length: 1000 }).notNull(),
-  date: timestamp("date"),
+  date: timestamp("date").defaultNow(),
   userId: varchar("user_id", { length: 255 }).references(() => user.id),
+  siret: varchar("siret", { length: 14 }).notNull(),
+  sector: varchar("sector", { length: 255 }).notNull(),
+  logo: varchar("logo", { length: 255 }).notNull(),
 });
 
 export const images = mysqlTable("images", {

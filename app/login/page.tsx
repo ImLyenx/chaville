@@ -1,4 +1,5 @@
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
+import bgImage from "@/public/images/bg-login.jpg";
 
 import { LoginForm } from "@/components/auth/login-form";
 import Image from "next/image";
@@ -7,7 +8,7 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen w-full items-center">
       <Image
-        src="https://kdog16zdet.ufs.sh/f/0fIBcaT6jsOdAvHMFuIa1R6tTshfO3XLrGPEom8KYFceuWk0"
+        src={bgImage}
         alt="Login background"
         width={1000}
         height={1000}

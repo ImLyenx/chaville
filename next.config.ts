@@ -4,7 +4,11 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "kdog16zdet.ufs.sh",
+        protocol: "https",
+        hostname: "*.ufs.sh",
+        port: "",
+        pathname: "/f/**",
+        search: "",
       },
     ],
   },
