@@ -6,12 +6,6 @@ import { ModeToggle } from "./mode-toggle";
 
 export default function homepage() {
   return (
-    <ThemeProvider
-    attribute="class"
-    defaultTheme="system"
-    enableSystem
-    disableTransitionOnChange
-    >
     <section className="m-10">
       <div className="bg-[#155093] pl-5 pr-5 pt-2 pb-2 rounded-full flex justify-between">
         <div className="text-white flex flex-row mt-2">
@@ -56,6 +50,5 @@ export default function homepage() {
         <Button></Button>
       </div>
     </section>
-    </ThemeProvider>
   );
 }
