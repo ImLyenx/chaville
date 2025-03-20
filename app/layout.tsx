@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const kanit = Kanit({
   variable: "--font-kanit",
@@ -24,11 +25,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={` ${kanit.className} antialiased text-foreground`}>
-        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-        {children}
-        <Toaster />
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${kanit.className} antialiased text-foreground`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
