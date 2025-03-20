@@ -2,6 +2,7 @@ import Image from "next/image";
 import { CarouselOne } from "./carousel_1";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
+import ContactMairie from "./contact-mairie";
 
 export default function homepage() {
   return (
@@ -48,6 +49,7 @@ export default function homepage() {
         <h1 className="font-bold text-3xl mt-16 mb-5">Catégories</h1>
         <Button></Button>
       </div>
+      <ContactMairie />
     </section>
   );
 }
