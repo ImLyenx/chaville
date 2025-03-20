@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { CarouselOne } from "./carousel_1";
 import { Button } from "@/components/ui/button";
-import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "./mode-toggle";
 
 export default function homepage() {
