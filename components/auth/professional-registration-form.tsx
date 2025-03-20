@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,21 @@ const VALID_SECTORS = [
   "Construction",
   "Transport",
   "Éducation",
+  "Autre",
+] as const;
+
+// Define valid contact types
+const VALID_CONTACT_TYPES = [
+  "Facebook",
+  "Instagram",
+  "LinkedIn",
+  "Twitter",
+  "TikTok",
+  "YouTube",
+  "WhatsApp",
+  "Email",
+  "Téléphone",
+  "Site Web",
   "Autre",
 ] as const;
 
@@ -113,6 +128,58 @@ const professionalFormSchema = z
           "Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre.",
       }),
     confirmPassword: z.string(),
+    socialNetworks: z
+      .array(
+        z
+          .object({
+            type: z.enum(VALID_CONTACT_TYPES),
+            label: z.string().optional(),
+            link: z
+              .string()
+              .min(1, "Ce champ est requis")
+              .superRefine((val, ctx) => {
+                const type = ctx.parent?.type;
+                if (!type) return;
+
+                switch (type) {
+                  case "Email":
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                      ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Veuillez entrer une adresse email valide",
+                      });
+                    }
+                    break;
+                  case "Téléphone":
+                    if (
+                      !/^(\+33|0)[1-9](\s?\d{2}){4}$/.test(
+                        val.replace(/\s/g, "")
+                      )
+                    ) {
+                      ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message:
+                          "Veuillez entrer un numéro de téléphone valide",
+                      });
+                    }
+                    break;
+                }
+              }),
+          })
+          .superRefine((data, ctx) => {
+            if (
+              data.type === "Autre" &&
+              (!data.label || data.label.trim() === "")
+            ) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Un libellé est requis pour le type 'Autre'",
+                path: ["label"],
+              });
+            }
+          })
+      )
+      .default([]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
@@ -136,7 +203,13 @@ export function ProfessionalRegistrationForm() {
       password: "",
       confirmPassword: "",
       additionalImages: [],
+      socialNetworks: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "socialNetworks",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -180,6 +253,30 @@ export function ProfessionalRegistrationForm() {
       }
 
       const enterprise = await enterpriseResponse.json();
+
+      // Create social network records
+      if (data.socialNetworks && data.socialNetworks.length > 0) {
+        const socialNetworksResponse = await fetch(
+          "/api/enterprise/coordonnees",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              coordonnees: data.socialNetworks.map((network) => ({
+                type: network.type,
+                link: network.link,
+                entrepriseId: enterprise.id,
+              })),
+            }),
+          }
+        );
+
+        if (!socialNetworksResponse.ok) {
+          toast.error("Erreur lors de l'ajout des réseaux sociaux");
+        }
+      }
 
       // Finally, create the additional images records
       if (data.additionalImages && data.additionalImages.length > 0) {
@@ -484,6 +581,126 @@ export function ProfessionalRegistrationForm() {
                   <FormControl>
                     <Input type="password" placeholder="********" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="socialNetworks"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Réseaux sociaux et contacts</FormLabel>
+                  <FormControl>
+                    <div className="space-y-4">
+                      {fields.map((field, index) => (
+                        <div key={field.id} className="space-y-2">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-1/3">
+                              <FormField
+                                control={form.control}
+                                name={`socialNetworks.${index}.type`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <Select
+                                      onValueChange={field.onChange}
+                                      defaultValue={field.value}
+                                    >
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Type de contact" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        {VALID_CONTACT_TYPES.map((type) => (
+                                          <SelectItem key={type} value={type}>
+                                            {type}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            {form.watch(`socialNetworks.${index}.type`) ===
+                              "Autre" && (
+                              <div className="flex-1">
+                                <FormField
+                                  control={form.control}
+                                  name={`socialNetworks.${index}.label`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormControl>
+                                        <Input
+                                          placeholder="Libellé du contact"
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <FormField
+                                control={form.control}
+                                name={`socialNetworks.${index}.link`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input
+                                        placeholder={
+                                          form.watch(
+                                            `socialNetworks.${index}.type`
+                                          ) === "Email"
+                                            ? "exemple@email.com"
+                                            : form.watch(
+                                                `socialNetworks.${index}.type`
+                                              ) === "Téléphone"
+                                            ? "+33 6 12 34 56 78"
+                                            : "https://..."
+                                        }
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => remove(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() =>
+                          append({ type: "Facebook", link: "", label: "" })
+                        }
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Ajouter un contact
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Ajoutez vos réseaux sociaux et moyens de contact (Facebook,
+                    Email, Téléphone, etc.)
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
