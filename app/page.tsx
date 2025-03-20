@@ -13,10 +13,10 @@ export default function homepage() {
     disableTransitionOnChange
     >
     <section className="m-10">
-      <div className="bg-[#155093] p-5 rounded-full flex flex-row justify-between">
+      <div className="bg-[#155093] pl-5 pr-5 pt-2 pb-2 rounded-full flex justify-between">
         <div className="text-white flex flex-row mt-2">
-          <p>Consommer Local - </p>
-          <p className="font-bold">Chaville</p>
+          <p className="pr-1 text-xl leading-6">Consommer Local - </p>
+          <p className="font-bold text-xl leading-6">Chaville</p>
         </div>
         <div className="flex gap-5">
           <ModeToggle />
