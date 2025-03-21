@@ -10,7 +10,10 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
     if (!session?.user?.role || session.user.role !== "admin") {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
@@ -26,7 +29,7 @@ export async function PUT(
       })
       .where(eq(entreprise.id, params.id));
 
-    // Fetch the updated enterprise
+    // Fetch the updated enterprise to confirm the update
     const [updatedEnterprise] = await db
       .select()
       .from(entreprise)

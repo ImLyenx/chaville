@@ -1,12 +1,21 @@
 import { EnterpriseProfile } from "@/components/enterprise/enterprise-profile";
 import { EnterpriseData } from "@/lib/types";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getEnterpriseData(slug: string): Promise<EnterpriseData> {
+async function getEnterpriseData(
+  slug: string
+): Promise<EnterpriseData & { isOwner: boolean }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  const userId = session?.user?.id;
+
   const response = await fetch(
     `http://localhost:3000/api/enterprise/${encodeURIComponent(slug)}`,
     {
@@ -88,6 +97,7 @@ async function getEnterpriseData(slug: string): Promise<EnterpriseData> {
         5: 0,
       },
     },
+    isOwner: userId === data.userId,
   };
 }
 

@@ -2,6 +2,9 @@ import { db } from "@/lib/db";
 import { entreprise, images, coordonnees, user, reviews } from "@/lib/schema";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { v4 as uuidv4 } from "uuid";
 
 export async function GET(
   request: Request,
@@ -105,6 +108,98 @@ export async function GET(
     return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error fetching enterprise:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { slug } = await params;
+    const body = await request.json();
+
+    // Fetch enterprise to check ownership
+    const [enterprise] = await db
+      .select({
+        id: entreprise.id,
+        userId: entreprise.userId,
+      })
+      .from(entreprise)
+      .where(eq(entreprise.slug, slug));
+
+    if (!enterprise) {
+      return NextResponse.json(
+        { error: "Enterprise not found" },
+        { status: 404 }
+      );
+    }
+
+    if (enterprise.userId !== userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Update enterprise basic info
+    await db
+      .update(entreprise)
+      .set({
+        name: body.name,
+        sector: body.sector,
+        description: body.description,
+        logo: body.logo,
+      })
+      .where(eq(entreprise.id, enterprise.id));
+
+    // Update photos
+    // First, delete all existing photos
+    await db.delete(images).where(eq(images.entrepriseId, enterprise.id));
+
+    // Then, insert new photos with generated UUIDs
+    if (body.photos && body.photos.length > 0) {
+      await db.insert(images).values(
+        body.photos.map((url: string) => ({
+          id: uuidv4(),
+          entrepriseId: enterprise.id,
+          url,
+          alternatif: body.name,
+        }))
+      );
+    }
+
+    // Update contact info
+    // First, delete all existing contact info
+    await db
+      .delete(coordonnees)
+      .where(eq(coordonnees.entrepriseId, enterprise.id));
+
+    // Then, insert new contact info with generated UUIDs
+    if (body.coordonnees && body.coordonnees.length > 0) {
+      await db.insert(coordonnees).values(
+        body.coordonnees.map((contact: { type: string; link: string }) => ({
+          id: uuidv4(),
+          entrepriseId: enterprise.id,
+          type: contact.type,
+          link: contact.link,
+        }))
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error updating enterprise:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

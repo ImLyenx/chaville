@@ -23,6 +23,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 
 const SocialIcon = ({ type }: { type: string }) => {
   switch (type.toLowerCase()) {
@@ -97,6 +99,7 @@ export function EnterpriseProfile({
   socials,
   reviews,
   slug,
+  isOwner,
 }: {
   name: string;
   sector: string;
@@ -110,40 +113,57 @@ export function EnterpriseProfile({
     distribution: { [key: string]: number };
   };
   slug: string;
+  isOwner: boolean;
 }) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-      <div className="flex flex-col lg:flex-row gap-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex gap-6">
         {/* Left Column */}
         <div className="flex-[2] flex flex-col gap-6">
           {/* Name Card */}
-          <Card className="p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
-              {logo && (
-                <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0">
-                  <Image
-                    src={logo}
-                    alt={name}
-                    fill
-                    className="rounded-lg object-cover"
-                  />
+          <Card className="p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-6">
+                {logo && (
+                  <div className="relative h-24 w-24 shrink-0">
+                    <Image
+                      src={logo}
+                      alt={name}
+                      fill
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-3xl font-bold">{name}</h1>
+                  <p className="text-muted-foreground mt-1">{sector}</p>
                 </div>
-              )}
-              <div className="text-center sm:text-left">
-                <h1 className="text-2xl sm:text-3xl font-bold">{name}</h1>
-                <p className="text-muted-foreground mt-1">{sector}</p>
               </div>
+              {isOwner && (
+                <Button variant="outline" size="icon" asChild>
+                  <Link href={`/enterprise/${slug}/edit`}>
+                    <Pencil className="h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </div>
           </Card>
 
           {/* Content Card */}
-          <Card className="p-4 sm:p-6">
-            <div className="space-y-8 sm:space-y-12">
+          <Card className="p-6">
+            <div className="space-y-12">
               {/* About Section */}
               <section>
-                <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
-                  À propos
-                </h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-semibold">À propos</h2>
+                  {isOwner && (
+                    <Button variant="outline" size="icon" asChild>
+                      <Link href={`/enterprise/${slug}/edit#about`}>
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
                 <p className="text-muted-foreground leading-relaxed">
                   {description}
                 </p>
@@ -152,14 +172,21 @@ export function EnterpriseProfile({
               {/* Photos Section */}
               {photos.length > 0 && (
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
-                    Photos
-                  </h2>
-                  <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-semibold">Photos</h2>
+                    {isOwner && (
+                      <Button variant="outline" size="icon" asChild>
+                        <Link href={`/enterprise/${slug}/edit#photos`}>
+                          <Pencil className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
                     {photos.map((photo, index) => (
                       <Dialog key={index}>
                         <DialogTrigger asChild>
-                          <div className="relative h-48 sm:h-64 lg:h-80 w-full cursor-pointer hover:opacity-90 transition-opacity">
+                          <div className="relative aspect-square cursor-pointer hover:opacity-90 transition-opacity">
                             <Image
                               src={photo}
                               alt={`${name} photo ${index + 1}`}
@@ -182,7 +209,7 @@ export function EnterpriseProfile({
                               className="object-contain"
                               priority
                               quality={100}
-                              sizes="(max-width: 640px) 95vw, (max-width: 1024px) 75vw, 95vw"
+                              sizes="95vw"
                             />
                           </div>
                         </DialogContent>
@@ -192,11 +219,9 @@ export function EnterpriseProfile({
                 </section>
               )}
 
-              {/* Reviews Section - Only visible on desktop */}
-              <section className="hidden sm:block">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
-                  Avis détaillés
-                </h2>
+              {/* Reviews Section */}
+              <section>
+                <h2 className="text-2xl font-semibold mb-6">Avis détaillés</h2>
                 <ReviewsList slug={slug} />
               </section>
             </div>
@@ -206,14 +231,20 @@ export function EnterpriseProfile({
         {/* Right Column */}
         <div className="flex-1 flex flex-col gap-6">
           {/* Sector & Socials Card */}
-          <Card className="p-4 sm:p-6">
+          <Card className="p-6">
             <div className="flex flex-col gap-4">
-              <Badge
-                className="w-fit text-base sm:text-lg py-1.5 sm:py-2 px-3 sm:px-4"
-                variant="secondary"
-              >
-                {sector}
-              </Badge>
+              <div className="flex items-center justify-between">
+                <Badge className="w-fit text-lg py-2 px-4" variant="secondary">
+                  {sector}
+                </Badge>
+                {isOwner && (
+                  <Button variant="outline" size="icon" asChild>
+                    <Link href={`/enterprise/${slug}/edit#contact`}>
+                      <Pencil className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
+              </div>
               <div className="flex flex-col gap-3">
                 {socials.map((social) => (
                   <div key={social.type} className="flex items-center gap-2">
@@ -222,7 +253,7 @@ export function EnterpriseProfile({
                       href={formatSocialLink(social.type, social.value)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {social.label}
                     </Link>
@@ -233,16 +264,16 @@ export function EnterpriseProfile({
           </Card>
 
           {/* Review Stats Card */}
-          <Card className="p-4 sm:p-6">
-            <div className="space-y-6 sm:space-y-8">
+          <Card className="p-6">
+            <div className="space-y-8">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="text-3xl sm:text-4xl font-bold">
+                  <span className="text-4xl font-bold">
                     {reviews.rating.toFixed(1)}
                   </span>
-                  <StarIcon className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400" />
+                  <StarIcon className="h-8 w-8 text-yellow-400" />
                 </div>
-                <p className="text-sm sm:text-base text-muted-foreground">
+                <p className="text-muted-foreground">
                   {reviews.count} avis au total
                 </p>
               </div>
@@ -255,17 +286,17 @@ export function EnterpriseProfile({
 
                   return (
                     <div key={rating} className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 w-10 sm:w-12">
-                        <span className="text-sm sm:text-base">{rating}</span>
-                        <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
+                      <div className="flex items-center gap-1 w-12">
+                        <span>{rating}</span>
+                        <StarIcon className="h-4 w-4 text-yellow-400" />
                       </div>
-                      <div className="flex-1 h-1.5 sm:h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className="h-full bg-yellow-400 rounded-full"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
-                      <span className="text-xs sm:text-sm text-muted-foreground w-8 sm:w-12 text-right">
+                      <span className="text-sm text-muted-foreground w-12 text-right">
                         {count}
                       </span>
                     </div>
@@ -274,14 +305,6 @@ export function EnterpriseProfile({
               </div>
 
               <ReviewForm enterpriseSlug={slug} />
-            </div>
-          </Card>
-
-          {/* Reviews Section - Only visible on mobile */}
-          <Card className="p-4 block sm:hidden">
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Avis détaillés</h2>
-              <ReviewsList slug={slug} />
             </div>
           </Card>
         </div>
