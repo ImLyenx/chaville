@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +15,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "./mode-toggle";
+import Link from "next/link";
 
 export function Header() {
   const [position, setPosition] = React.useState("bottom");
+  const [enterpriseSlug, setEnterpriseSlug] = useState<string | null>(null);
   const { data: session } = authClient.useSession();
   const router = useRouter();
+
+  useEffect(() => {
+    const checkEnterprise = async () => {
+      if (session?.user?.id) {
+        try {
+          const response = await fetch("/api/enterprise/check", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.slug) {
+              setEnterpriseSlug(data.slug);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to check enterprise:", error);
+        }
+      }
+    };
+
+    checkEnterprise();
+  }, [session?.user?.id]);
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -29,13 +58,22 @@ export function Header() {
     router.push("/admin/users");
   };
 
+  const handleEnterpriseClick = () => {
+    if (enterpriseSlug) {
+      router.push(`/enterprise/${enterpriseSlug}`);
+    }
+  };
+
   return (
     <section>
       <div className="bg-[#155093] p-5 rounded-full flex flex-row justify-between">
         <div className="text-white flex flex-row mt-2">
-          <p className="text-sm sm:text-base">Consommer Local - Chaville</p>
+          <Link href="/">
+            <p className="text-sm sm:text-base">Consommer Local - Chaville</p>
+          </Link>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <ModeToggle />
           {session?.user?.role === "admin" && (
             <Button
               variant="outline"
@@ -43,6 +81,15 @@ export function Header() {
               onClick={handleAdminDashboard}
             >
               Admin
+            </Button>
+          )}
+          {enterpriseSlug && (
+            <Button
+              variant="outline"
+              className="sm:w-32 w-20 bg-white p-2 rounded-full"
+              onClick={handleEnterpriseClick}
+            >
+              Entreprise
             </Button>
           )}
           <div className="relative">
@@ -70,15 +117,6 @@ export function Header() {
                         onClick={() => router.push("/account")}
                       >
                         Votre compte
-                      </Button>
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="settings">
-                      <Button
-                        className="w-full justify-start"
-                        variant="ghost"
-                        onClick={() => router.push("/settings")}
-                      >
-                        Paramètre
                       </Button>
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="logout">
