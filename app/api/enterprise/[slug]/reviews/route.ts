@@ -55,8 +55,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    console.log("Received request for slug:", slug);
-
+    // console.log("Received request for slug:", slug);
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session?.user?.id) {
       return NextResponse.json(
