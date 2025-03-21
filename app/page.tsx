@@ -2,6 +2,7 @@ import Image from "next/image";
 import { CarouselOne } from "./carousel_1";
 import { CarouselTwo } from "./carousel_2";
 import { Header } from "./header";
+import Footer from "./footer";
 import { Button } from "@/components/ui/button";
 
 export default function homepage() {
@@ -30,6 +31,7 @@ export default function homepage() {
       <div className="flex justify-center mt-10">
         <Button className="bg-[#155093] text-white px-5 rounded-full">Voir plus</Button>
       </div>
+      <Footer />
     </section></>
   )
 }
