@@ -32,9 +32,9 @@ export default function ContactMairie() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 shadow-md rounded-lg border  border-gray-500
+    <div className="max-w-3xl mx-auto p-6 shadow-md rounded-lg border  border-gray-500
 ">
-      <h2 className="text-xl font-semibold mb-5">Contacter la mairie</h2>
+      <h2 className="text-xl font-semibold mb-2">Contacter la mairie</h2>
       <form onSubmit={handleSubmit}>
         <label className="block mb-2">
           Votre message:
@@ -42,7 +42,7 @@ export default function ContactMairie() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
-            className="w-full p-10 border border-gray-500 rounded mt-1"
+            className="w-full p-2 h-40 border border-gray-500 rounded mt-1"
           ></textarea>
         </label>
         <button
