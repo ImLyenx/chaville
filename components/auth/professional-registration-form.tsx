@@ -303,6 +303,7 @@ export function ProfessionalRegistrationForm() {
       toast.success("Compte créé avec succès");
       router.push("/success");
     } catch (error) {
+      console.error("Erreur lors de la création du compte:", error);
       toast.error("Une erreur est survenue lors de la création du compte");
     }
     setIsLoading(false);
@@ -342,13 +343,13 @@ export function ProfessionalRegistrationForm() {
               name="companyName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nom de l'entreprise</FormLabel>
+                  <FormLabel>Nom de l&apos;entreprise</FormLabel>
                   <FormControl>
                     <Input placeholder="Raison sociale" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Le nom officiel de votre entreprise tel qu'il apparaît sur
-                    votre SIRET
+                    Le nom officiel de votre entreprise tel qu&apos;il apparaît
+                    sur votre SIRET
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -360,7 +361,7 @@ export function ProfessionalRegistrationForm() {
               name="logo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Logo de l'entreprise</FormLabel>
+                  <FormLabel>Logo de l&apos;entreprise</FormLabel>
                   <FormControl>
                     <div className="space-y-4">
                       {field.value ? (
@@ -484,7 +485,8 @@ export function ProfessionalRegistrationForm() {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Ajoutez jusqu'à 5 images supplémentaires de votre entreprise
+                    Ajoutez jusqu&apos;à 5 images supplémentaires de votre
+                    entreprise
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -496,7 +498,7 @@ export function ProfessionalRegistrationForm() {
               name="sector"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Secteur d'activité</FormLabel>
+                  <FormLabel>Secteur d&apos;activité</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}

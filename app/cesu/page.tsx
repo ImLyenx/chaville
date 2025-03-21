@@ -1,36 +1,13 @@
-import Image from "next/image";
+import { Header } from "../header";
 
 export default function cesu() {
   return (
     <section className="sm:m-10 m-2">
-      <div className="bg-[#155093] p-5 rounded-full flex flex-row justify-between">
-        <div className="text-white flex flex-row mt-2">
-          <p>Consommer Local - </p>
-          <p className="font-bold">Chaville</p>
-        </div>
-        <div className="flex">
-          <div className="relative">
-            <input
-              className="p-2 w-96 rounded-full mr-5 pl-10"
-              type="text"
-              placeholder="Rechercher des commerçants"
-            />
-            <Image
-              className="absolute left-3 top-1/2 transform -translate-y-1/2"
-              src="/magnifying-glass-solid.svg"
-              alt="Search icon"
-              width={15}
-              height={15}
-              priority
-            />
-          </div>
-          <button className="w-32  bg-white p-2 rounded-full">Compte ▼</button>
-        </div>
-      </div>
+      <Header />
       <div>
         <div className="bg-white p-10 rounded-3xl sm:m-10 m-2">
           <h2 className="font-bold sm:text-3xl m-5 mb-10 text-xl">
-            Qu’est-ce que le CESU ?
+            Qu&apos;est-ce que le CESU ?
           </h2>
           <p className="m-5 font-bold">
             Le Cesu est une offre simplifiée pour déclarer facilement la
@@ -44,32 +21,32 @@ export default function cesu() {
 
         <div className="sm:m-10 m-2">
           <h2 className="font-bold sm:text-3xl sm:m-5 sm:mb-10 m-0 text-xl text-[#920F4F] ml-10">
-            Le CESU c’est pour qui ?
+            Le CESU c&apos;est pour qui ?
           </h2>
           <div className="font-bold m-5 bg-white p-10 rounded-3xl">
             <p className="sm:m-5 sm:w-2/5 m-0 w-full">
-              Le Cesu vous facilite les démarches administratives pour déclarer
-              la rémunération versée à un salarié à domicile pour des activités
-              de services à la personne telles que:
+              Le Cesu vous permet de déclarer la rémunération de votre salarié
+              pour des activités de services à la personne réalisées à votre
+              domicile :
             </p>
             <ol className="list-disc sm:m-5 m-0">
-              <li className="sm:ml-10 m-0">l’entretien de la maison,</li>
+              <li className="sm:ml-10 m-0">l&apos;entretien de la maison,</li>
               <li className="sm:ml-10 m-0">
                 les petits travaux de jardinage et bricolage,
               </li>
               <li className="sm:ml-10 m-0">
-                le soutien scolaire (à l’exception des cours à distance qui ne
-                sont pas éligibles au Cesu),
+                le soutien scolaire (à l&apos;exception des cours à distance qui
+                ne sont pas éligibles au Cesu),
               </li>
               <li className="sm:ml-10 m-0">le babysitting,</li>
               <li className="sm:ml-10 m-0">
-                l’assistance aux personnes âgées ou fragiles à l’exception de
-                soins relevant d’actes médicaux,
+                l&apos;assistance aux personnes âgées ou fragiles à
+                l&apos;exception de soins relevant d&apos;actes médicaux,
               </li>
               <li className="sm:ml-10 m-0">
-                toutes les activités qui s’exercent en dehors du domicile dans
-                le prolongement d’une activité de service au domicile de
-                l’employeur.
+                toutes les activités qui s&apos;exercent en dehors du domicile
+                dans le prolongement d&apos;une activité de service au domicile
+                de l&apos;employeur.
               </li>
             </ol>
           </div>
@@ -80,9 +57,11 @@ export default function cesu() {
             Attention, vous ne pouvez pas notamment utiliser le Cesu pour :
           </h2>
           <ol className="list-disc m-5 font-bold bg-white p-10 rounded-3xl ">
-            <li className="sm:ml-10 m-0">les travaux de rénovation de l’habitat,</li>
             <li className="sm:ml-10 m-0">
-              l’emploi d’une assistante maternelle agréée.
+              les travaux de rénovation de l&apos;habitat,
+            </li>
+            <li className="sm:ml-10 m-0">
+              l&apos;emploi d&apos;une assistante maternelle agréée.
             </li>
           </ol>
         </div>
@@ -94,10 +73,10 @@ export default function cesu() {
           <div className="font-bold m-5 bg-white sm:p-10 p-2 rounded-3xl">
             <p className="m-5">
               Dès que vous faites appel à un salarié à votre domicile, vous avez
-              l’obligation de le déclarer. Votre déclaration permet au Cesu de
-              calculer les cotisations, d’établir et d’adresser le bulletin de
-              salaire à votre salarié. Ces cotisations sont les principales
-              bases du financement solidaire de la{" "}
+              l&apos;obligation de le déclarer. Votre déclaration permet au Cesu
+              de calculer les cotisations, d&apos;établir et d&apos;adresser le
+              bulletin de salaire à votre salarié. Ces cotisations sont les
+              principales bases du financement solidaire de la{" "}
               <a
                 className="italic p-2"
                 href="https://www.cesu.urssaf.fr/info/accueil/lexique.html?letter=S#securite-sociale"
@@ -107,18 +86,19 @@ export default function cesu() {
             </p>
             <p className="m-5">
               En tant que salarié, être déclaré vous garantit des droits et vous
-              permet de bénéficier d’une couverture sociale : assurance maladie,
-              maternité,{" "}
+              permet de bénéficier d&apos;une couverture sociale : assurance
+              maladie, maternité,{" "}
               <a
                 className="italic p-2"
                 href="https://www.cesu.urssaf.fr/info/accueil/lexique.html?letter=R#retraite"
               >
                 retraite
               </a>
-              , accident du travail, chômage… Ne pas être déclaré, c’est vous
-              pénaliser dans l’obtention de vos droits sociaux. Ne pas déclarer,
-              établir une fausse déclaration ou ne pas déclarer toutes les
-              heures effectuées, c’est encourir une sanction pénale et civile.
+              , accident du travail, chômage… Ne pas être déclaré, c&apos;est
+              vous pénaliser dans l&apos;obtention de vos droits sociaux. Ne pas
+              déclarer, établir une fausse déclaration ou ne pas déclarer toutes
+              les heures effectuées, c&apos;est encourir une sanction pénale et
+              civile.
             </p>
           </div>
         </div>
@@ -129,18 +109,18 @@ export default function cesu() {
           </h2>
           <div className="font-bold m-5 bg-white sm:p-10 p-2 rounded-3xl">
             <p className="m-5">
-              Dès lors que vous établissez une déclaration, l'Urssaf service
-              Cesu s’assure des{" "}
+              Dès lors que vous établissez une déclaration, l&apos;Urssaf
+              service Cesu s&apos;assure des{" "}
               <a
                 className="italic p-2 rounded-lg"
                 href="https://www.urssaf.fr/accueil/outils-documentation/taux-baremes.html"
               >
                 taux de cotisations
               </a>{" "}
-              en vigueur et réalise l’ensemble des opérations. Le Cesu, c’est
-              plus de tranquillité. Plus besoin de suivre les évolutions des
-              taux, ils sont mis à jour automatiquement en fonction des
-              nouvelles réglementations.
+              en vigueur et réalise l&apos;ensemble des opérations. Le Cesu,
+              c&apos;est plus de tranquillité. Plus besoin de suivre les
+              évolutions des taux, ils sont mis à jour automatiquement en
+              fonction des nouvelles réglementations.
             </p>
             <p className="m-5">
               Le Cesu vous offre aussi plus de fiabilité. Les
@@ -159,7 +139,8 @@ export default function cesu() {
         <br></br>
 
         <h2 className="font-bold text-3xl italic ml-10">
-          Pour plus d’informations, veuillez regarder le site web :<br></br>{" "}
+          Pour plus d&apos;informations, veuillez regarder le site web :
+          <br></br>{" "}
           <a
             className="italic p-2 text-[#920F4F]"
             href="https://www.cesu.urssaf.fr/info/accueil/s-informer-sur-le-cesu/tout-savoir/c-est-quoi-pour-qui.html"

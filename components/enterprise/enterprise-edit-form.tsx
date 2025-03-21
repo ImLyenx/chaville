@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { UploadButton } from "@/lib/uploadthing";
@@ -111,6 +111,7 @@ export function EnterpriseEditForm({
       router.push(`/enterprise/${slug}`);
       router.refresh();
     } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'entreprise:", error);
       toast.error("Erreur", {
         description: "Une erreur est survenue lors de la mise à jour.",
       });
@@ -126,7 +127,7 @@ export function EnterpriseEditForm({
         <h2 className="text-2xl font-semibold mb-6">Informations de base</h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name">Nom de l'entreprise</Label>
+            <Label htmlFor="name">Nom de l&apos;entreprise</Label>
             <Input
               id="name"
               value={name}
@@ -135,7 +136,7 @@ export function EnterpriseEditForm({
             />
           </div>
           <div>
-            <Label htmlFor="sector">Secteur d'activité</Label>
+            <Label htmlFor="sector">Secteur d&apos;activité</Label>
             <Select value={sector} onValueChange={setSector} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez un secteur" />

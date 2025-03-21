@@ -71,25 +71,6 @@ const formatSocialLink = (type: string, value: string): string => {
   }
 };
 
-const formatPhoneDisplay = (phone: string): string => {
-  // Remove any non-digit characters
-  const cleaned = phone.replace(/\D/g, "");
-
-  // Format French phone number
-  if (cleaned.startsWith("33")) {
-    return cleaned.replace(
-      /(\d{2})(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})/,
-      "+$1 $2 $3 $4 $5 $6"
-    );
-  }
-
-  // Format regular phone number
-  return cleaned.replace(
-    /(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-    "$1 $2 $3 $4 $5"
-  );
-};
-
 export function EnterpriseProfile({
   name,
   sector,

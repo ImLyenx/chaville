@@ -3,6 +3,7 @@ import { EnterpriseData } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { Header } from "@/app/header";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -126,8 +127,13 @@ export default async function EnterprisePage({ params }: PageProps) {
   const data = await getEnterpriseData(slug);
 
   return (
-    <main className="min-h-screen bg-background py-8">
-      <EnterpriseProfile {...data} />
+    <main className="min-h-screen bg-background">
+      <div className="sm:m-10 m-2">
+        <Header />
+      </div>
+      <div className="py-8">
+        <EnterpriseProfile {...data} />
+      </div>
     </main>
   );
 }
