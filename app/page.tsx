@@ -23,9 +23,13 @@ export default function homepage() {
       </div>
       <CarouselOne />
 
-      <div className="flex justify-between">
+      <div className="flex justify-start">
         <h1 className="font-bold text-xl mt-16 mb-5 sm:text-3xl">Catégories</h1>
       </div>
-    </section> <CarouselTwo/></>
+      <CarouselTwo/>
+      <div className="flex justify-center mt-10">
+        <Button className="bg-[#155093] text-white px-5 rounded-full">Voir plus</Button>
+      </div>
+    </section></>
   )
 }
