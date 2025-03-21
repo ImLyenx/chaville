@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function cesu() {
   return (
-    <section className="m-10">
+    <section className="sm:m-10 m-2">
       <div className="bg-[#155093] p-5 rounded-full flex flex-row justify-between">
         <div className="text-white flex flex-row mt-2">
           <p>Consommer Local - </p>
@@ -24,12 +24,12 @@ export default function cesu() {
               priority
             />
           </div>
-          <button className=" w-32  bg-white p-2 rounded-full">Compte ▼</button>
+          <button className="w-32  bg-white p-2 rounded-full">Compte ▼</button>
         </div>
       </div>
       <div>
-        <div className="bg-white p-10 rounded-3xl m-10">
-          <h2 className="font-bold text-3xl m-5 mb-10">
+        <div className="bg-white p-10 rounded-3xl sm:m-10 m-2">
+          <h2 className="font-bold sm:text-3xl m-5 mb-10 text-xl">
             Qu’est-ce que le CESU ?
           </h2>
           <p className="m-5 font-bold">
@@ -42,31 +42,31 @@ export default function cesu() {
           </p>
         </div>
 
-        <div className="m-10">
-          <h2 className="font-bold text-3xl text-[#920F4F] ml-10">
+        <div className="sm:m-10 m-2">
+          <h2 className="font-bold sm:text-3xl sm:m-5 sm:mb-10 m-0 text-xl text-[#920F4F] ml-10">
             Le CESU c’est pour qui ?
           </h2>
           <div className="font-bold m-5 bg-white p-10 rounded-3xl">
-            <p className="m-5 w-2/5">
+            <p className="sm:m-5 sm:w-2/5 m-0 w-full">
               Le Cesu vous facilite les démarches administratives pour déclarer
               la rémunération versée à un salarié à domicile pour des activités
               de services à la personne telles que:
             </p>
-            <ol className="list-disc m-5">
-              <li className="ml-10">l’entretien de la maison,</li>
-              <li className="ml-10">
+            <ol className="list-disc sm:m-5 m-0">
+              <li className="sm:ml-10 m-0">l’entretien de la maison,</li>
+              <li className="sm:ml-10 m-0">
                 les petits travaux de jardinage et bricolage,
               </li>
-              <li className="ml-10">
+              <li className="sm:ml-10 m-0">
                 le soutien scolaire (à l’exception des cours à distance qui ne
                 sont pas éligibles au Cesu),
               </li>
-              <li className="ml-10">le babysitting,</li>
-              <li className="ml-10">
+              <li className="sm:ml-10 m-0">le babysitting,</li>
+              <li className="sm:ml-10 m-0">
                 l’assistance aux personnes âgées ou fragiles à l’exception de
                 soins relevant d’actes médicaux,
               </li>
-              <li className="ml-10">
+              <li className="sm:ml-10 m-0">
                 toutes les activités qui s’exercent en dehors du domicile dans
                 le prolongement d’une activité de service au domicile de
                 l’employeur.
@@ -75,23 +75,23 @@ export default function cesu() {
           </div>
         </div>
 
-        <div className="m-10">
-          <h2 className="font-bold text-3xl text-[#920F4F] ml-10">
+        <div className="sm:m-10 m-2">
+          <h2 className="font-bold sm:text-3xl sm:m-5 sm:mb-10 m-0 text-xl text-[#920F4F] ml-10">
             Attention, vous ne pouvez pas notamment utiliser le Cesu pour :
           </h2>
           <ol className="list-disc m-5 font-bold bg-white p-10 rounded-3xl ">
-            <li className="ml-10">les travaux de rénovation de l’habitat,</li>
-            <li className="ml-10">
+            <li className="sm:ml-10 m-0">les travaux de rénovation de l’habitat,</li>
+            <li className="sm:ml-10 m-0">
               l’emploi d’une assistante maternelle agréée.
             </li>
           </ol>
         </div>
 
-        <div className="m-10">
-          <h2 className="font-bold text-3xl text-[#920F4F] ml-10">
+        <div className="sm:m-10 m-2">
+          <h2 className="font-bold sm:text-3xl sm:m-5 sm:mb-10 m-0 text-xl text-[#920F4F] ml-10">
             Est-ce obligatoire ?
           </h2>
-          <div className="font-bold m-5 bg-white p-10 rounded-3xl">
+          <div className="font-bold m-5 bg-white sm:p-10 p-2 rounded-3xl">
             <p className="m-5">
               Dès que vous faites appel à un salarié à votre domicile, vous avez
               l’obligation de le déclarer. Votre déclaration permet au Cesu de
@@ -123,11 +123,11 @@ export default function cesu() {
           </div>
         </div>
 
-        <div className="m-10">
-          <h2 className="font-bold text-3xl text-[#920F4F] ml-10">
+        <div className="sm:m-10 m-2">
+          <h2 className="font-bold sm:text-3xl sm:m-5 sm:mb-10 m-0 text-xl text-[#920F4F] ml-10">
             Les avantages
           </h2>
-          <div className="font-bold m-5 bg-white p-10 rounded-3xl">
+          <div className="font-bold m-5 bg-white sm:p-10 p-2 rounded-3xl">
             <p className="m-5">
               Dès lors que vous établissez une déclaration, l'Urssaf service
               Cesu s’assure des{" "}
