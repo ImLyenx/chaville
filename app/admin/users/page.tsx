@@ -137,7 +137,7 @@ export default function UsersPage() {
       return {
         users: data.users.map((user) => ({
           ...user,
-          enterprise: enterpriseMap[user.id] || null,
+          enterprise: enterpriseMap.get(user.id)?.[0] || null,
         })),
         total: data.total,
       };
@@ -274,14 +274,10 @@ export default function UsersPage() {
     isValidated: boolean
   ) => {
     try {
-      const result = await updateEnterpriseValidation(
+      const updatedEnterprise = await updateEnterpriseValidation(
         enterpriseId,
         isValidated
       );
-
-      if (!result.success) {
-        throw new Error("Failed to update validation status");
-      }
 
       // Update the users list to reflect the change
       setUsers((prevUsers) =>
