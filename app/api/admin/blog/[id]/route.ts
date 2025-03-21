@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session || !session.user || session.user.role !== "admin") {
@@ -14,8 +14,9 @@ export async function GET(
   }
 
   try {
+    const { id } = await params;
     const blogPost = await db.query.blog.findFirst({
-      where: eq(blog.id, parseInt(params.id)),
+      where: eq(blog.id, parseInt(id)),
     });
 
     if (!blogPost) {
@@ -31,7 +32,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session || !session.user || session.user.role !== "admin") {
@@ -39,6 +40,7 @@ export async function PUT(
   }
 
   try {
+    const { id } = await params;
     const body = await request.json();
     const { title, content, isWrittenByAdmin } = body;
 
@@ -55,10 +57,10 @@ export async function PUT(
         isValidated: isWrittenByAdmin,
         updatedAt: new Date(),
       })
-      .where(eq(blog.id, parseInt(params.id)));
+      .where(eq(blog.id, parseInt(id)));
 
     const updatedBlog = await db.query.blog.findFirst({
-      where: eq(blog.id, parseInt(params.id)),
+      where: eq(blog.id, parseInt(id)),
     });
 
     return NextResponse.json(updatedBlog);
@@ -70,7 +72,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session || !session.user || session.user.role !== "admin") {
@@ -78,7 +80,8 @@ export async function DELETE(
   }
 
   try {
-    await db.delete(blog).where(eq(blog.id, parseInt(params.id)));
+    const { id } = await params;
+    await db.delete(blog).where(eq(blog.id, parseInt(id)));
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("Error deleting blog post:", error);

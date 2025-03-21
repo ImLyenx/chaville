@@ -17,9 +17,17 @@ export async function POST(request: Request) {
     // Create the coordonnees records
     await db.insert(coordonnees).values(
       coordonneesList.map(
-        (coordonnee: { type: string; link: string; entrepriseId: string }) => ({
+        (coordonnee: {
+          type: string;
+          link: string;
+          label?: string;
+          entrepriseId: string;
+        }) => ({
           id: uuidv4(),
-          ...coordonnee,
+          type:
+            coordonnee.type === "Autre" ? coordonnee.label : coordonnee.type,
+          link: coordonnee.link,
+          entrepriseId: coordonnee.entrepriseId,
         })
       )
     );

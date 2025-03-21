@@ -34,11 +34,20 @@ export async function updateEnterpriseValidation(
   isValidated: boolean
 ) {
   try {
-    await db
-      .update(entreprise)
-      .set({ isValidated })
-      .where(eq(entreprise.id, enterpriseId));
-    return { success: true };
+    const response = await fetch(`/api/enterprise/validate/${enterpriseId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isValidated }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update validation status");
+    }
+
+    const data = await response.json();
+    return { success: true, data };
   } catch (error) {
     console.error("Error updating enterprise validation:", error);
     return { success: false };

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { entreprise } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { notFound } from "next/navigation";
 
 export async function PUT(
   request: NextRequest,

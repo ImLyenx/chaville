@@ -267,6 +267,7 @@ export function ProfessionalRegistrationForm() {
               coordonnees: data.socialNetworks.map((network) => ({
                 type: network.type,
                 link: network.link,
+                label: network.label,
                 entrepriseId: enterprise.id,
               })),
             }),
