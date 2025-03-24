@@ -18,6 +18,8 @@ import {
   Trash2,
   UserCog,
   Search,
+  Check,
+  X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -25,6 +27,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Drawer,
@@ -49,14 +53,33 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { getEnterprisesByUserIds, updateEnterpriseValidation } from "./actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// Define the User type based on what's returned from the API
+// Define the Enterprise type
+interface Enterprise {
+  id: string;
+  name: string;
+  siret: string;
+  isValidated: boolean;
+  sector: string;
+}
+
+// Update the User interface
 interface User {
   id: string;
   name?: string;
   email: string;
   role?: string | null;
   banned?: boolean | null;
+  enterprise?: Enterprise | null;
 }
 
 interface UserResponse {
@@ -66,51 +89,127 @@ interface UserResponse {
 
 const ITEMS_PER_PAGE = 10;
 
+// Add sectors constant
+const SECTORS = [
+  "Restauration",
+  "Commerce",
+  "Services",
+  "Artisanat",
+  "Construction",
+  "Transport",
+  "Autre",
+];
+
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedValidation, setSelectedValidation] = useState<string>("all");
+  const [selectedSector, setSelectedSector] = useState<string>("all");
   const searchParams = useSearchParams();
   const searchedEmail = searchParams.get("email");
   const searchedName = searchParams.get("name");
   const currentPage = Number(searchParams.get("page")) || 1;
 
+  const fetchUsersWithEnterprises = async (options?: {
+    limit?: number;
+    offset?: number;
+    searchField?: "email" | "name";
+    searchValue?: string;
+  }) => {
+    const response = await authClient.admin.listUsers({
+      query: {
+        limit: options?.limit || ITEMS_PER_PAGE,
+        offset: options?.offset || 0,
+        ...(options?.searchField && {
+          searchField: options.searchField,
+          searchValue: options.searchValue,
+        }),
+      },
+    });
+
+    if ("data" in response && response.data) {
+      const data = response.data as unknown as UserResponse;
+      const userIds = data.users.map((user) => user.id);
+      const enterpriseMap = await getEnterprisesByUserIds(userIds);
+
+      return {
+        users: data.users.map((user) => ({
+          ...user,
+          enterprise: enterpriseMap.get(user.id)?.[0] || null,
+        })),
+        total: data.total,
+      };
+    }
+
+    throw new Error("Failed to fetch users");
+  };
+
+  // Add filter function
+  const filterUsers = (users: User[]) => {
+    let filteredUsers = [...users];
+
+    // Sort unvalidated enterprises first
+    filteredUsers.sort((a, b) => {
+      if (a.enterprise?.isValidated === b.enterprise?.isValidated) return 0;
+      if (!a.enterprise?.isValidated) return -1;
+      if (!b.enterprise?.isValidated) return 1;
+      return 0;
+    });
+
+    // Filter by validation status
+    if (selectedValidation !== "all") {
+      filteredUsers = filteredUsers.filter((user) => {
+        if (selectedValidation === "validated") {
+          return user.enterprise?.isValidated === true;
+        }
+        if (selectedValidation === "unvalidated") {
+          return user.enterprise?.isValidated === false;
+        }
+        if (selectedValidation === "noEnterprise") {
+          return !user.enterprise;
+        }
+        return true;
+      });
+    }
+
+    // Filter by sector
+    if (selectedSector !== "all") {
+      filteredUsers = filteredUsers.filter(
+        (user) => user.enterprise?.sector === selectedSector
+      );
+    }
+
+    return filteredUsers;
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await authClient.admin.listUsers({
-          query: {
-            limit: ITEMS_PER_PAGE,
-            offset: (currentPage - 1) * ITEMS_PER_PAGE,
-            ...(searchedEmail && {
-              searchField: "email",
-              searchValue: searchedEmail,
-            }),
-            ...(searchedName && {
-              searchField: "name",
-              searchValue: searchedName,
-            }),
-          },
+        const { users: fetchedUsers, total } = await fetchUsersWithEnterprises({
+          limit: ITEMS_PER_PAGE,
+          offset: (currentPage - 1) * ITEMS_PER_PAGE,
+          ...(searchedEmail && {
+            searchField: "email",
+            searchValue: searchedEmail,
+          }),
+          ...(searchedName && {
+            searchField: "name",
+            searchValue: searchedName,
+          }),
         });
 
-        if ("data" in response && response.data) {
-          const data = response.data as unknown as UserResponse;
-          setUsers(data.users);
-          // If total is available, use it for pagination
-          // Otherwise, check if we got less users than the page size, meaning we're on the last page
-          setTotalPages(
-            data.total
-              ? Math.ceil(data.total / ITEMS_PER_PAGE)
-              : data.users.length < ITEMS_PER_PAGE
-              ? currentPage
-              : currentPage + 1
-          );
-        } else {
-          console.error("Error fetching users:", response);
-          setUsers([]);
-        }
+        const filteredUsers = filterUsers(fetchedUsers);
+        setUsers(filteredUsers);
+        setTotalPages(
+          total
+            ? Math.ceil(total / ITEMS_PER_PAGE)
+            : filteredUsers.length < ITEMS_PER_PAGE
+            ? currentPage
+            : currentPage + 1
+        );
       } catch (error) {
         console.error("Error fetching users:", error);
         setUsers([]);
@@ -120,7 +219,13 @@ export default function UsersPage() {
     };
 
     fetchUsers();
-  }, [searchedEmail, searchedName, currentPage]);
+  }, [
+    searchedEmail,
+    searchedName,
+    currentPage,
+    selectedValidation,
+    selectedSector,
+  ]);
 
   const handleRoleChange = async (
     userId: string,
@@ -132,18 +237,15 @@ export default function UsersPage() {
         role: newRole,
       });
       // Refresh the users list
-      const response = await authClient.admin.listUsers({
-        query: {
-          limit: ITEMS_PER_PAGE,
-          offset: (currentPage - 1) * ITEMS_PER_PAGE,
-        },
+      const { users: updatedUsers } = await fetchUsersWithEnterprises({
+        limit: ITEMS_PER_PAGE,
+        offset: (currentPage - 1) * ITEMS_PER_PAGE,
       });
-      if ("data" in response && response.data) {
-        const data = response.data as unknown as UserResponse;
-        setUsers(data.users);
-      }
+      setUsers(updatedUsers);
+      toast.success("Rôle mis à jour avec succès");
     } catch (error) {
       console.error("Error changing role:", error);
+      toast.error("Erreur lors de la mise à jour du rôle");
     }
   };
 
@@ -155,18 +257,52 @@ export default function UsersPage() {
         await authClient.admin.unbanUser({ userId });
       }
       // Refresh the users list
-      const response = await authClient.admin.listUsers({
-        query: {
-          limit: ITEMS_PER_PAGE,
-          offset: (currentPage - 1) * ITEMS_PER_PAGE,
-        },
+      const { users: updatedUsers } = await fetchUsersWithEnterprises({
+        limit: ITEMS_PER_PAGE,
+        offset: (currentPage - 1) * ITEMS_PER_PAGE,
       });
-      if ("data" in response && response.data) {
-        const data = response.data as unknown as UserResponse;
-        setUsers(data.users);
-      }
+      setUsers(updatedUsers);
+      toast.success(ban ? "Utilisateur banni" : "Utilisateur réactivé");
     } catch (error) {
       console.error("Error updating user ban status:", error);
+      toast.error("Erreur lors de la mise à jour du statut");
+    }
+  };
+
+  const handleValidateEnterprise = async (
+    enterpriseId: string,
+    isValidated: boolean
+  ) => {
+    try {
+      const updatedEnterprise = await updateEnterpriseValidation(
+        enterpriseId,
+        isValidated
+      );
+
+      // Update the users list to reflect the change
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => {
+          if (user.enterprise?.id === enterpriseId) {
+            return {
+              ...user,
+              enterprise: {
+                ...user.enterprise,
+                isValidated,
+              },
+            };
+          }
+          return user;
+        })
+      );
+
+      toast.success(
+        isValidated
+          ? "Entreprise validée avec succès"
+          : "Entreprise marquée comme non validée"
+      );
+    } catch (error) {
+      console.error("Error updating enterprise validation status:", error);
+      toast.error("Erreur lors de la mise à jour du statut");
     }
   };
 
@@ -242,66 +378,143 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>Gestion des Utilisateurs</CardTitle>
-          {/* Desktop search form */}
-          <div className="hidden md:block">
-            <SearchForms
-              initialEmail={searchedEmail || undefined}
-              initialName={searchedName || undefined}
-            />
-          </div>
-          {/* Mobile search button */}
-          <div className="md:hidden">
-            <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-              <DrawerTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent>
-                <DrawerHeader>
-                  <DrawerTitle>Rechercher des utilisateurs</DrawerTitle>
-                  <DrawerDescription>
-                    Utilisez les champs ci-dessous pour filtrer les utilisateurs
-                  </DrawerDescription>
-                </DrawerHeader>
-                <div className="p-4">
-                  <SearchForms
-                    initialEmail={searchedEmail || undefined}
-                    initialName={searchedName || undefined}
-                  />
-                </div>
-                <DrawerFooter>
-                  <DrawerClose asChild>
-                    <Button variant="outline">Fermer</Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              </DrawerContent>
-            </Drawer>
+          <div className="flex items-center gap-4">
+            {/* Filters */}
+            <div className="hidden md:flex items-center gap-4">
+              <Select
+                value={selectedValidation}
+                onValueChange={setSelectedValidation}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Statut de validation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="validated">Validées</SelectItem>
+                  <SelectItem value="unvalidated">Non validées</SelectItem>
+                  <SelectItem value="noEnterprise">Sans entreprise</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedSector} onValueChange={setSelectedSector}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Secteur d'activité" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les secteurs</SelectItem>
+                  {SECTORS.map((sector) => (
+                    <SelectItem key={sector} value={sector}>
+                      {sector}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <SearchForms
+                initialEmail={searchedEmail || undefined}
+                initialName={searchedName || undefined}
+              />
+            </div>
+
+            {/* Mobile filters button */}
+            <div className="md:hidden">
+              <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+                <DrawerTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <DrawerHeader>
+                    <DrawerTitle>Filtres</DrawerTitle>
+                    <DrawerDescription>
+                      Filtrez et recherchez des utilisateurs
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <div className="p-4 space-y-4">
+                    <Select
+                      value={selectedValidation}
+                      onValueChange={setSelectedValidation}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Statut de validation" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les statuts</SelectItem>
+                        <SelectItem value="validated">Validées</SelectItem>
+                        <SelectItem value="unvalidated">
+                          Non validées
+                        </SelectItem>
+                        <SelectItem value="noEnterprise">
+                          Sans entreprise
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select
+                      value={selectedSector}
+                      onValueChange={setSelectedSector}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Secteur d'activité" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les secteurs</SelectItem>
+                        {SECTORS.map((sector) => (
+                          <SelectItem key={sector} value={sector}>
+                            {sector}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <SearchForms
+                      initialEmail={searchedEmail || undefined}
+                      initialName={searchedName || undefined}
+                    />
+                  </div>
+                  <DrawerFooter>
+                    <DrawerClose asChild>
+                      <Button variant="outline">Fermer</Button>
+                    </DrawerClose>
+                  </DrawerFooter>
+                </DrawerContent>
+              </Drawer>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-center py-4">Chargement...</p>
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
           ) : !users || users.length === 0 ? (
-            <p className="text-center py-4">Aucun utilisateur trouvé</p>
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Aucun utilisateur trouvé</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Rôle</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead>Actions</TableHead>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="font-semibold">Nom</TableHead>
+                    <TableHead className="font-semibold">Email</TableHead>
+                    <TableHead className="font-semibold">Rôle</TableHead>
+                    <TableHead className="font-semibold">Statut</TableHead>
+                    <TableHead className="font-semibold">Entreprise</TableHead>
+                    <TableHead className="font-semibold text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map((user: User) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{user.name || "Sans nom"}</TableCell>
+                    <TableRow key={user.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">
+                        {user.name || "Sans nom"}
+                      </TableCell>
                       <TableCell className="max-w-[200px] truncate">
                         {user.email}
                       </TableCell>
@@ -310,6 +523,7 @@ export default function UsersPage() {
                           variant={
                             user.role === "admin" ? "destructive" : "secondary"
                           }
+                          className="font-normal"
                         >
                           {user.role === "admin"
                             ? "Administrateur"
@@ -319,18 +533,52 @@ export default function UsersPage() {
                       <TableCell>
                         <Badge
                           variant={user.banned ? "destructive" : "default"}
+                          className="font-normal"
                         >
                           {user.banned ? "Banni" : "Actif"}
                         </Badge>
                       </TableCell>
                       <TableCell>
+                        {user.enterprise ? (
+                          <div className="space-y-1.5">
+                            <div className="font-medium">
+                              {user.enterprise.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              SIRET: {user.enterprise.siret}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Secteur: {user.enterprise.sector}
+                            </div>
+                            <Badge
+                              variant={
+                                user.enterprise.isValidated
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className="font-normal"
+                            >
+                              {user.enterprise.isValidated
+                                ? "Validée"
+                                : "En attente"}
+                            </Badge>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">
+                            Aucune entreprise
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                               <UserCog className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() =>
                                 handleRoleChange(
@@ -357,6 +605,28 @@ export default function UsersPage() {
                               >
                                 <Ban className="mr-2 h-4 w-4" />
                                 Bannir l'Utilisateur
+                              </DropdownMenuItem>
+                            )}
+                            {user.enterprise && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleValidateEnterprise(
+                                    user.enterprise!.id,
+                                    !user.enterprise!.isValidated
+                                  )
+                                }
+                              >
+                                {user.enterprise.isValidated ? (
+                                  <>
+                                    <X className="mr-2 h-4 w-4" />
+                                    Invalider l'Entreprise
+                                  </>
+                                ) : (
+                                  <>
+                                    <Check className="mr-2 h-4 w-4" />
+                                    Valider l'Entreprise
+                                  </>
+                                )}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
