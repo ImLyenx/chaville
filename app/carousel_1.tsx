@@ -55,9 +55,9 @@ export function CarouselOne() {
       <CarouselContent>
         {slides.map((slide, index) => (
           <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-            <div>
-              <Card>
-                <CardContent className="w-full grid grid-cols-2 items-center p-0 rounded-3x bg-background/70">
+            <div className="h-[200px]">
+              <Card className="rounded-3xl h-full">
+                <CardContent className=" h-full w-full grid grid-cols-2 items-center p-0 rounded-3xl bg-[#1550935b]">
                   <div className="text-left m-5">
                     <h3 className="font-bold text-lg">{slide.title}</h3>
                     <p className="mb-4">{slide.description}</p>
@@ -68,21 +68,22 @@ export function CarouselOne() {
                   <div className="w-full h-full relative">
                     <Image
                       src={slide.image}
-                      className="w-full h-full m-0 p-0 rounded-r-lg"
+                      className="w-full h-full m-0 p-0 rounded-r-3xl"
                       alt={slide.title}
                       layout="fill"
                       objectFit="cover"
                       priority
                     />
                   </div>
+
                 </CardContent>
               </Card>
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="sm:bottom-[220] bottom-[210]" />
+      <CarouselNext className="sm:bottom-[220] bottom-[210]"/>
     </Carousel>
   );
 }

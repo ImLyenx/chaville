@@ -62,7 +62,7 @@ export function CarouselTwo() {
         {slidestwo.map((slide, index) => (
         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/5 flex justify-center">
             <div className=" w-60 h-96">
-                <Card className="w-60 h-96 rounded-3xl relative">
+                <Card className="w-60 h-96 rounded-3xl relative bg-[#155093cb]">
                     <CardContent className="w-60 h-96 p-0">
                     <Image
                         src={slide.image}
