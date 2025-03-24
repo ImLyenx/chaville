@@ -2,15 +2,11 @@ import { sendEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
-    const { subject, message, fileUrls } = await req.json();
+    const { subject, message, fileUrls, email } = await req.json();
 
     if (!process.env.RESEND_FROM_EMAIL || !process.env.RESEND_SUPPORT_EMAIL) {
       throw new Error("Les variables d'environnement ne sont pas définies.");
     }
-
-    // Utiliser une adresse par défaut s’il n’y a pas d’utilisateur connecté
-    const email = process.env.RESEND_FROM_EMAIL ?? "noreply@chaville-entrepreneurs.fr";
-
     // Construire le message avec les fichiers s’il y en a
     let fullMessage = message;
     if (fileUrls?.length) {
