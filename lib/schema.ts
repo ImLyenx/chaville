@@ -9,6 +9,7 @@ import {
   text,
   json,
 } from "drizzle-orm/mysql-core";
+import { relations } from "drizzle-orm";
 
 import { user } from "@/auth-schema";
 
@@ -45,6 +46,13 @@ export const entreprise = mysqlTable("entreprise", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   date: timestamp("date").defaultNow(),
 });
+
+export const entrepriseRelations = relations(entreprise, ({ one }) => ({
+  user: one(user, {
+    fields: [entreprise.userId],
+    references: [user.id],
+  }),
+}));
 
 export const images = mysqlTable("images", {
   id: varchar("id", { length: 255 }).primaryKey(),
