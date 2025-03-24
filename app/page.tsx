@@ -49,7 +49,6 @@ export default function homepage() {
         <h1 className="font-bold text-3xl mt-16 mb-5">Catégories</h1>
         <Button></Button>
       </div>
-      <ContactMairie />
     </section>
   );
 }
