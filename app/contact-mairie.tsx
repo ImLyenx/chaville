@@ -18,6 +18,8 @@ export default function ContactMairie() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,8 +102,7 @@ export default function ContactMairie() {
         </label>
 
         {fileUrls.length > 0 && (
-          <div className="mt-4">
-            <p className="font-semibold mb-2">Fichiers ajoutés :</p>
+          <div className="mt-4 ">
             <ul className="space-y-2">
               {fileUrls.map(({ url, name }, idx) => (
                 <li key={idx} className="flex items-center gap-3">
@@ -129,7 +130,7 @@ export default function ContactMairie() {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-blue-600 underline break-all max-w-[200px] truncate"
+                      className="text-sm underline break-all max-w-[200px] truncate"
                     >
                       {name}
                     </a>
@@ -148,7 +149,34 @@ export default function ContactMairie() {
           >
             {loading ? "Envoi..." : "Envoyer"}
           </button>
-          <Upload setFileUrls={setFileUrls} />
+          <Upload setFileUrls={setFileUrls} setUploading={setUploading} />
+          {uploading && (
+          <div className="fixed inset-0 0 z-50 flex items-center justify-center">
+            <svg
+              className="animate-spin h-12 w-12 text-blue-600"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              />
+            </svg>
+            <p className="text-500 font-medium text-lg ml-2">
+              Chargement du fichier...
+            </p>
+          </div>
+        )}
+
         </div>
       </form>
 

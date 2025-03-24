@@ -2,8 +2,10 @@ import { UploadButton } from "@uploadthing/react";
 
 export default function Upload({
   setFileUrls,
+  setUploading,
 }: {
   setFileUrls: (urls: { url: string; name: string }[]) => void;
+  setUploading: (value: boolean) => void; 
 }) {
   return (
     <div className="flex items-center relative group">
@@ -13,6 +15,7 @@ export default function Upload({
 
       <UploadButton
         endpoint="imageUploader"
+        onUploadBegin={() => setUploading(true)}
         onClientUploadComplete={(res) => {
           if (!res) return;
 
@@ -22,9 +25,11 @@ export default function Upload({
           }));
 
           setFileUrls((prev) => [...prev, ...uploads]);
+          setUploading(false);
         }}
         onUploadError={(error) => {
           alert(`Erreur de téléversement : ${error.message}`);
+          setUploading(false);
         }}
         appearance={{
           container: "w-8 h-8 flex items-center justify-center",
