@@ -73,6 +73,13 @@ export function Header() {
         </div>
         <div className="flex gap-2 items-center">
           <ModeToggle />
+          <Button
+            variant="outline"
+            className="sm:w-24 w-16 bg-white p-2 rounded-full hidden sm:block"
+            onClick={() => router.push("/blog")}
+          >
+            Blog
+          </Button>
           {session?.user?.role === "admin" && (
             <Button
               variant="outline"

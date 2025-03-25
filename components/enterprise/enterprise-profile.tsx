@@ -15,6 +15,8 @@ import {
   Phone,
   Mail,
   Link as LinkIcon,
+  PenSquare,
+  Store,
 } from "lucide-react";
 import {
   Dialog,
@@ -24,7 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, PencilIcon } from "lucide-react";
 
 const SocialIcon = ({ type }: { type: string }) => {
   switch (type.toLowerCase()) {
@@ -102,31 +104,77 @@ export function EnterpriseProfile({
         {/* Left Column */}
         <div className="flex-[2] flex flex-col gap-6">
           {/* Name Card */}
-          <Card className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-6">
-                {logo && (
-                  <div className="relative h-24 w-24 shrink-0">
-                    <Image
-                      src={logo}
-                      alt={name}
-                      fill
-                      className="rounded-lg object-cover"
-                    />
+          <Card className="p-6 sm:p-10">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start mb-8 gap-4 sm:gap-8">
+              <div className="w-32 h-32 rounded-lg overflow-hidden shadow-md border border-gray-200 relative flex items-center justify-center">
+                {logo ? (
+                  <Image
+                    src={logo}
+                    alt={name}
+                    width={128}
+                    height={128}
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="bg-gray-100 w-full h-full flex items-center justify-center text-gray-400">
+                    <Store className="w-12 h-12" />
                   </div>
                 )}
-                <div>
-                  <h1 className="text-3xl font-bold">{name}</h1>
-                  <p className="text-muted-foreground mt-1">{sector}</p>
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold">{name}</h1>
+                    <div className="flex items-center justify-center sm:justify-start mt-2 gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {sector}
+                      </Badge>
+                      {/* Star Rating */}
+                      <div className="flex items-center">
+                        <div className="flex items-center">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <StarIcon
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < Math.round(reviews.rating)
+                                  ? "text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs ml-1 text-gray-600">
+                          ({reviews.count} avis)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  {isOwner && (
+                    <div className="mt-4 sm:mt-0 flex space-x-2">
+                      <Link href={`/enterprise/${slug}/edit`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center"
+                        >
+                          <PencilIcon className="mr-1 w-3 h-3" />
+                          Éditer
+                        </Button>
+                      </Link>
+                      <Link href={`/enterprise/${slug}/blog`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center"
+                        >
+                          <PenSquare className="mr-1 w-3 h-3" />
+                          Blog
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
-              {isOwner && (
-                <Button variant="outline" size="icon" asChild>
-                  <Link href={`/enterprise/${slug}/edit`}>
-                    <Pencil className="h-4 w-4" />
-                  </Link>
-                </Button>
-              )}
             </div>
           </Card>
 

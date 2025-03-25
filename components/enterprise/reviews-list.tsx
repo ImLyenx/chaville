@@ -32,7 +32,8 @@ export function ReviewsList({ slug }: ReviewsListProps) {
         const data = await response.json();
         setReviews(data);
       } catch (err) {
-        setError("Une erreur est survenue lors de la récupération des avis");
+        console.error("Error fetching reviews:", err);
+        setError("Une erreur est survenue lors de la récupération des avis :");
       } finally {
         setLoading(false);
       }

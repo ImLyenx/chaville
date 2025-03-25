@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { blog } from "@/lib/schema";
+import { blog, entreprise } from "@/lib/schema";
 import { NextRequest, NextResponse } from "next/server";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, inArray } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
@@ -56,10 +56,59 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const offset = (page - 1) * limit;
 
+    // Get all blogs
     const blogs = await db.query.blog.findMany({
       limit,
       offset,
       orderBy: (blog, { desc }) => [desc(blog.createdAt)],
+    });
+
+    // Get enterprise information for blog posts written by enterprises
+    const enterpriseIds = blogs
+      .filter((post) => !post.isWrittenByAdmin && post.entrepriseId)
+      .map((post) => post.entrepriseId as string);
+
+    let enterpriseMap: Record<string, { name: string; slug: string }> = {};
+
+    if (enterpriseIds.length > 0) {
+      const enterprises = await db
+        .select({
+          id: entreprise.id,
+          name: entreprise.name,
+          slug: entreprise.slug,
+        })
+        .from(entreprise)
+        .where(inArray(entreprise.id, enterpriseIds));
+
+      enterpriseMap = enterprises.reduce((acc, enterprise) => {
+        acc[enterprise.id] = {
+          name: enterprise.name,
+          slug: enterprise.slug,
+        };
+        return acc;
+      }, {} as Record<string, { name: string; slug: string }>);
+    }
+
+    // Attach enterprise info to each blog
+    const blogsWithEnterpriseInfo = blogs.map((blogPost) => {
+      if (
+        !blogPost.isWrittenByAdmin &&
+        blogPost.entrepriseId &&
+        enterpriseMap[blogPost.entrepriseId]
+      ) {
+        return {
+          ...blogPost,
+          enterpriseName: enterpriseMap[blogPost.entrepriseId].name,
+          enterpriseSlug: enterpriseMap[blogPost.entrepriseId].slug,
+        };
+      }
+      return {
+        ...blogPost,
+        enterpriseName: blogPost.isWrittenByAdmin
+          ? "Admin"
+          : "Entreprise inconnue",
+        enterpriseSlug: null,
+      };
     });
 
     const totalResult = await db
@@ -68,7 +117,7 @@ export async function GET(request: NextRequest) {
     const total = totalResult[0].count;
 
     return NextResponse.json({
-      blogs,
+      blogs: blogsWithEnterpriseInfo,
       total,
     });
   } catch (error) {

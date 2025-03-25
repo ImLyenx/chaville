@@ -44,6 +44,8 @@ interface Blog {
   isWrittenByAdmin: boolean;
   isValidated: boolean;
   entrepriseId: string | null;
+  enterpriseName?: string;
+  enterpriseSlug?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -254,13 +256,22 @@ export default function BlogPage() {
                         {blog.title}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            blog.isWrittenByAdmin ? "default" : "secondary"
-                          }
-                        >
-                          {blog.isWrittenByAdmin ? "Admin" : "Entreprise"}
-                        </Badge>
+                        {blog.isWrittenByAdmin ? (
+                          <Badge variant="default">Admin</Badge>
+                        ) : blog.enterpriseSlug ? (
+                          <Link href={`/enterprise/${blog.enterpriseSlug}`}>
+                            <Badge
+                              variant="secondary"
+                              className="cursor-pointer hover:bg-secondary/80"
+                            >
+                              {blog.enterpriseName || "Entreprise"}
+                            </Badge>
+                          </Link>
+                        ) : (
+                          <Badge variant="secondary">
+                            {blog.enterpriseName || "Entreprise"}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge
