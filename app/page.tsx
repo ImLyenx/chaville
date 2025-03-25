@@ -4,10 +4,11 @@ import { CarouselTwo } from "./carousel_2";
 import { Header } from "./header";
 import Footer from "./footer";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 import ContactMairie from "./contact-mairie";
 
-export default function homepage() {
+export default function Homepage() {
   return (
     <>
       <section className="sm:m-10 m-2">
@@ -37,9 +38,11 @@ export default function homepage() {
         </div>
         <CarouselTwo />
         <div className="flex justify-center mt-10">
+        <Link href="/commercants">
           <Button className="bg-[#155093] text-white px-5 rounded-full">
             Voir plus
           </Button>
+        </Link>
         </div>
         <Footer />
       </section>
