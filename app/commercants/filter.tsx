@@ -23,19 +23,38 @@ const Filtres: React.FC<FiltresProps> = ({ onSectorChange }) => {
     onSectorChange(sector); // Call the callback with the selected sector
   };
 
+  const VALID_SECTORS = [
+    "Commerce",
+    "Services",
+    "Restauration",
+    "Artisanat",
+    "Santé",
+    "Bien-être",
+    "Construction",
+    "Transport",
+    "Éducation",
+    "Autre",
+  ] as const;
+
   return (
     <section className="flex justify-center gap-20">
       <div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="sm:w-32 w-24 p-2 px-10">Secteur ▼</Button>
+            <Button variant="outline" className="sm:w-32 w-24 p-2 px-10">
+              Secteur ▼
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuRadioGroup value={position} onValueChange={handleSectorChange}>
-              <DropdownMenuRadioItem value="Bien être"><Button>Bien être</Button></DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Commerce"><Button>Commerce</Button></DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Services"><Button>Services</Button></DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Restauration"><Button>Restauration</Button></DropdownMenuRadioItem>
+            <DropdownMenuRadioGroup
+              value={position}
+              onValueChange={handleSectorChange}
+            >
+              {VALID_SECTORS.map((sector) => (
+                <DropdownMenuRadioItem key={sector} value={sector}>
+                  <Button>{sector}</Button>
+                </DropdownMenuRadioItem>
+              ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
