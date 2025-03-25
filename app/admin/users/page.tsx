@@ -11,15 +11,17 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
-  UserPlus,
-  ShieldCheck,
+  // UserPlus,
+  // ShieldCheck,
   Ban,
-  RefreshCw,
-  Trash2,
+  // RefreshCw,
+  // Trash2,
   UserCog,
   Search,
   Check,
   X,
+  Shield,
+  CheckCircle2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -62,6 +64,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 // Define the Enterprise type
 interface Enterprise {
@@ -70,6 +73,7 @@ interface Enterprise {
   siret: string;
   isValidated: boolean;
   sector: string;
+  slug: string;
 }
 
 // Update the User interface
@@ -137,7 +141,7 @@ export default function UsersPage() {
       return {
         users: data.users.map((user) => ({
           ...user,
-          enterprise: enterpriseMap[user.id] || null,
+          enterprise: enterpriseMap.get(user.id)?.[0] || null,
         })),
         total: data.total,
       };
@@ -274,14 +278,8 @@ export default function UsersPage() {
     isValidated: boolean
   ) => {
     try {
-      const result = await updateEnterpriseValidation(
-        enterpriseId,
-        isValidated
-      );
-
-      if (!result.success) {
-        throw new Error("Failed to update validation status");
-      }
+      // Call the function without storing the result
+      await updateEnterpriseValidation(enterpriseId, isValidated);
 
       // Update the users list to reflect the change
       setUsers((prevUsers) =>
@@ -546,7 +544,12 @@ export default function UsersPage() {
                         {user.enterprise ? (
                           <div className="space-y-1.5">
                             <div className="font-medium">
-                              {user.enterprise.name}
+                              <Link
+                                href={`/enterprise/${user.enterprise.slug}`}
+                                className="hover:underline text-blue-600 dark:text-blue-400"
+                              >
+                                {user.enterprise.name}
+                              </Link>
                             </div>
                             <div className="text-xs text-muted-foreground">
                               SIRET: {user.enterprise.siret}
@@ -583,6 +586,8 @@ export default function UsersPage() {
                           <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+
+                            {/* Role Change Option */}
                             <DropdownMenuItem
                               onClick={() =>
                                 handleRoleChange(
@@ -591,26 +596,32 @@ export default function UsersPage() {
                                 )
                               }
                             >
-                              <ShieldCheck className="mr-2 h-4 w-4" />
+                              <Shield className="mr-2 h-4 w-4" />
                               {user.role === "admin"
-                                ? "Définir comme Utilisateur"
-                                : "Définir comme Admin"}
+                                ? "Retirer droits admin"
+                                : "Donner droits admin"}
                             </DropdownMenuItem>
-                            {user.banned ? (
-                              <DropdownMenuItem
-                                onClick={() => handleBanUser(user.id, false)}
-                              >
-                                <RefreshCw className="mr-2 h-4 w-4" />
-                                Réactiver l'Utilisateur
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem
-                                onClick={() => handleBanUser(user.id, true)}
-                              >
-                                <Ban className="mr-2 h-4 w-4" />
-                                Bannir l'Utilisateur
-                              </DropdownMenuItem>
-                            )}
+
+                            {/* Ban/Unban Option */}
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleBanUser(user.id, !user.banned)
+                              }
+                            >
+                              {user.banned ? (
+                                <>
+                                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                                  Réactiver l&apos;utilisateur
+                                </>
+                              ) : (
+                                <>
+                                  <Ban className="mr-2 h-4 w-4" />
+                                  Bannir l&apos;utilisateur
+                                </>
+                              )}
+                            </DropdownMenuItem>
+
+                            {/* Enterprise Validation/Unvalidation Option */}
                             {user.enterprise && (
                               <DropdownMenuItem
                                 onClick={() =>
@@ -623,12 +634,12 @@ export default function UsersPage() {
                                 {user.enterprise.isValidated ? (
                                   <>
                                     <X className="mr-2 h-4 w-4" />
-                                    Invalider l'Entreprise
+                                    Invalider l&apos;entreprise
                                   </>
                                 ) : (
                                   <>
                                     <Check className="mr-2 h-4 w-4" />
-                                    Valider l'Entreprise
+                                    Valider l&apos;entreprise
                                   </>
                                 )}
                               </DropdownMenuItem>
