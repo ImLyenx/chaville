@@ -4,6 +4,8 @@ import { CarouselTwo } from "./carousel_2";
 import { Header } from "./header";
 import Footer from "./footer";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "./mode-toggle";
+import ContactMairie from "./contact-mairie";
 
 export default function homepage() {
   return (
