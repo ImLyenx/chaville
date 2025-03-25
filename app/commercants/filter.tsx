@@ -1,79 +1,47 @@
-"use client"
- 
-import * as React from "react"
- 
-import { Button } from "@/components/ui/button"
+"use client";
+
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-export default function Filtres(){
-    const [position, setPosition] = React.useState("bottom")
-
-    return(
-        <section className="flex justify-center gap-20">
-            <div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="sm:w-32 w-24 p-2 px-10">Premier filtre  ▼</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                            <DropdownMenuRadioItem value="top"><Button>Votre compte</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="bottom"><Button>Paramètre</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="right"><Button>Se déconnecter</Button></DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>  
-            <div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="sm:w-32 w-20  p-2">Deuxième filtre  ▼</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                            <DropdownMenuRadioItem value="top"><Button>Votre compte</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="bottom"><Button>Paramètre</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="right"><Button>Se déconnecter</Button></DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-            <div>
-            <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="sm:w-32 w-20  p-2">Troisième filtre  ▼</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                            <DropdownMenuRadioItem value="top"><Button>Votre compte</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="bottom"><Button>Paramètre</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="right"><Button>Se déconnecter</Button></DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-            <div>
-            <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="sm:w-32 w-20  p-2">Quatrième filtre  ▼</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                            <DropdownMenuRadioItem value="top"><Button>Votre compte</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="bottom"><Button>Paramètre</Button></DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="right"><Button>Se déconnecter</Button></DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </section>
-    )
+// Define the type for the props
+interface FiltresProps {
+  onSectorChange: (sector: string) => void; // Type for the callback function
 }
+
+const Filtres: React.FC<FiltresProps> = ({ onSectorChange }) => {
+  const [position, setPosition] = React.useState("bottom");
+
+  const handleSectorChange = (sector: string) => {
+    setPosition(sector);
+    onSectorChange(sector); // Call the callback with the selected sector
+  };
+
+  return (
+    <section className="flex justify-center gap-20">
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="sm:w-32 w-24 p-2 px-10">Secteur ▼</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuRadioGroup value={position} onValueChange={handleSectorChange}>
+              <DropdownMenuRadioItem value="Bien être"><Button>Bien être</Button></DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="Commerce"><Button>Commerce</Button></DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="Services"><Button>Services</Button></DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="Restauration"><Button>Restauration</Button></DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </section>
+  );
+};
+
+export default Filtres;
