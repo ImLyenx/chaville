@@ -63,7 +63,7 @@ export default function ContactMairie() {
     <div className="max-w-3xl mx-auto p-6 shadow-md rounded-lg border border-gray-500">
       <h2 className="text-xl font-semibold mb-2">Contacter la mairie</h2>
       <form onSubmit={handleSubmit}>
-        <div className="flex item-center gap-4">
+        <div className="flex gap-4">
           <label className="flex items-center gap-2 w-full whitespace-nowrap">
             E-mail : 
           <textarea
@@ -171,7 +171,7 @@ export default function ContactMairie() {
                 d="M4 12a8 8 0 018-8v8H4z"
               />
             </svg>
-            <p className="text-500 font-medium text-lg ml-2">
+            <p className="font-medium text-lg ml-2">
               Chargement du fichier...
             </p>
           </div>
