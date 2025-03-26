@@ -75,7 +75,7 @@ export function Header() {
           <ModeToggle />
           <Button
             variant="outline"
-            className="sm:w-24 w-16 bg-white p-2 rounded-full hidden sm:block"
+            className="sm:w-24 w-16 bg-white p-2 rounded-full hidden sm:block dark:text-black"
             onClick={() => router.push("/blog")}
           >
             Blog
@@ -83,7 +83,7 @@ export function Header() {
           {session?.user?.role === "admin" && (
             <Button
               variant="outline"
-              className="sm:w-32 w-20 bg-white p-2 rounded-full"
+              className="sm:w-32 w-20 bg-white p-2 rounded-full dark:text-black"
               onClick={handleAdminDashboard}
             >
               Admin
@@ -92,7 +92,7 @@ export function Header() {
           {enterpriseSlug && (
             <Button
               variant="outline"
-              className="sm:w-32 w-20 bg-white p-2 rounded-full"
+              className="sm:w-32 w-20 bg-white p-2 rounded-full dark:text-black"
               onClick={handleEnterpriseClick}
             >
               Entreprise
@@ -103,7 +103,7 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="sm:w-32 w-20 bg-white p-2 rounded-full"
+                  className="sm:w-32 w-20 bg-white p-2 rounded-full dark:text-black"
                 >
                   {session ? "Compte ▼" : "Connexion"}
                 </Button>
