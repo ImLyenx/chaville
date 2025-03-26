@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Header } from "../header";
-import Filtres from "./filter"; // Make sure the path matches
+import Filtres from "./filter";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,10 +18,9 @@ export default function Commercants() {
     }>
   >([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSector, setSelectedSector] = useState(""); // State for selected sector
+  const [selectedSector, setSelectedSector] = useState("");
 
   useEffect(() => {
-    // Function to fetch merchant data
     const fetchCommercants = async () => {
       try {
         const response = await fetch("/api/enterprise");
@@ -41,41 +40,42 @@ export default function Commercants() {
     return <p>Chargement...</p>;
   }
 
-  // Filter commercants based on selected sector
   const filteredCommercants = selectedSector
     ? commercants.filter((commercant) => commercant.sector === selectedSector)
     : commercants;
 
   return (
-    <section className="m:m-10 m-2">
+    <section className="m-4 md:m-10">
       <Header />
       <div className="flex justify-center">
-        <h1 className="text-6xl m-auto mt-10">
-          (Re) Découvrir vos commerçants
+        <h1 className="text-4xl md:text-6xl text-center mt-10">
+          (Re)découvrez vos commerçants
         </h1>
       </div>
-      <div className="flex justify-center gap-20 mt-20">
-        <h2 className="text-2xl font-bold mr-10">Filtres:</h2>
-        <Filtres onSectorChange={setSelectedSector} />{" "}
-        {/* Pass setSelectedSector to Filter */}
+      <div className="flex flex-col md:flex-row justify-center gap-5 mt-10 items-center">
+        <h2 className="text-xl md:text-2xl font-bold">Filtres :</h2>
+        <Filtres onSectorChange={setSelectedSector} />
       </div>
-      <div className="grid grid-cols-4 gap-5 ml-14">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-10 px-4">
         {filteredCommercants.map((commercant) => (
           <Link href={`/enterprise/${commercant.slug}`} key={commercant.id}>
-            <div
-              key={commercant.id}
-              className="w-60 h-80 bg-slate-500 rounded-3xl m-5 p-4 flex flex-col justify-between"
-            >
-              <Image
-                src={commercant.logo}
-                className="w-full h-full m-0 p-0 rounded-3xl"
-                alt={commercant.name}
-                width={50}
-                height={50}
-                priority
-              />
-              <h3 className="text-xl font-bold">{commercant.name}</h3>
-              <p className="text-sm font-light">{commercant.description}</p>
+            <div className="bg-slate-500 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 flex flex-col">
+              <div className="relative w-full aspect-square">
+                <Image
+                  src={commercant.logo}
+                  alt={commercant.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-2">
+                <h3 className="text-xl font-bold">{commercant.name}</h3>
+                <p className="text-sm font-light line-clamp-4">
+                  {commercant.description}
+                </p>
+              </div>
             </div>
           </Link>
         ))}
