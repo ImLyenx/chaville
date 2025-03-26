@@ -1,4 +1,5 @@
 import { Header } from "../header";
+import Footer from "../footer";
 
 export default function cesu() {
   return (
@@ -149,6 +150,7 @@ export default function cesu() {
           </a>
         </h2>
       </div>
+      <Footer />
     </section>
   );
 }
