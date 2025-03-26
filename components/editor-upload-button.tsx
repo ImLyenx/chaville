@@ -32,7 +32,6 @@ export default function EditorUploadButton({
     if (file) {
       await startUpload([file]);
     }
-    // Reset the input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }

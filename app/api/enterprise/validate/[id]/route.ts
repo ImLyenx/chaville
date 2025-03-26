@@ -20,7 +20,6 @@ export async function PUT(
 
     const { isValidated } = await request.json();
 
-    // Update the enterprise validation status
     await db
       .update(entreprise)
       .set({
@@ -29,7 +28,6 @@ export async function PUT(
       })
       .where(eq(entreprise.id, params.id));
 
-    // Fetch the updated enterprise to confirm the update
     const [updatedEnterprise] = await db
       .select()
       .from(entreprise)

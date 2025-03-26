@@ -10,7 +10,6 @@ interface Params {
   };
 }
 
-// Fetch all blog posts for an enterprise
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     const { slug } = params;
@@ -22,7 +21,6 @@ export async function GET(request: NextRequest, { params }: Params) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get the enterprise ID for this slug
     const enterprise = await db.query.entreprise.findFirst({
       where: eq(entreprise.slug, slug),
     });
@@ -31,12 +29,10 @@ export async function GET(request: NextRequest, { params }: Params) {
       return new NextResponse("Enterprise not found", { status: 404 });
     }
 
-    // Verify the user is the owner of this enterprise
     if (enterprise.userId !== session.user.id) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    // Get all blog posts from this enterprise
     const posts = await db.query.blog.findMany({
       where: eq(blog.entrepriseId, enterprise.id),
       orderBy: (blog, { desc }) => [desc(blog.createdAt)],
@@ -49,7 +45,6 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-// Create a new blog post for an enterprise
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     const { slug } = params;
@@ -61,7 +56,6 @@ export async function POST(request: NextRequest, { params }: Params) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get the enterprise for this slug
     const enterprise = await db.query.entreprise.findFirst({
       where: eq(entreprise.slug, slug),
     });
@@ -70,7 +64,6 @@ export async function POST(request: NextRequest, { params }: Params) {
       return new NextResponse("Enterprise not found", { status: 404 });
     }
 
-    // Verify the user is the owner of this enterprise
     if (enterprise.userId !== session.user.id) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
@@ -85,14 +78,13 @@ export async function POST(request: NextRequest, { params }: Params) {
       return new NextResponse("Content is required", { status: 400 });
     }
 
-    // Enterprise-created posts are not validated by default
     const [newBlogId] = await db
       .insert(blog)
       .values({
         title: title.trim(),
         content,
         isWrittenByAdmin: false,
-        isValidated: false, // Requires admin validation
+        isValidated: false,
         entrepriseId: enterprise.id,
         createdAt: new Date(),
         updatedAt: new Date(),

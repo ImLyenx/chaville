@@ -11,7 +11,6 @@ interface Params {
   };
 }
 
-// Get a single blog post
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     const { slug, id } = params;
@@ -23,7 +22,6 @@ export async function GET(request: NextRequest, { params }: Params) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get the enterprise for this slug
     const enterprise = await db.query.entreprise.findFirst({
       where: eq(entreprise.slug, slug),
     });
@@ -32,7 +30,6 @@ export async function GET(request: NextRequest, { params }: Params) {
       return new NextResponse("Enterprise not found", { status: 404 });
     }
 
-    // Verify the user is the owner of this enterprise
     if (enterprise.userId !== session.user.id) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
@@ -55,7 +52,6 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-// Update a blog post
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     const { slug, id } = params;
@@ -67,7 +63,6 @@ export async function PUT(request: NextRequest, { params }: Params) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get the enterprise for this slug
     const enterprise = await db.query.entreprise.findFirst({
       where: eq(entreprise.slug, slug),
     });
@@ -76,12 +71,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
       return new NextResponse("Enterprise not found", { status: 404 });
     }
 
-    // Verify the user is the owner of this enterprise
     if (enterprise.userId !== session.user.id) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    // Check if the blog post exists and belongs to this enterprise
     const existingPost = await db.query.blog.findFirst({
       where: and(
         eq(blog.id, parseInt(id)),
@@ -103,13 +96,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
       return new NextResponse("Content is required", { status: 400 });
     }
 
-    // When updating a post, set isValidated to false to require revalidation
     await db
       .update(blog)
       .set({
         title: title.trim(),
         content,
-        isValidated: false, // Requires admin validation again
+        isValidated: false,
         updatedAt: new Date(),
       })
       .where(eq(blog.id, parseInt(id)));
@@ -125,7 +117,6 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
-// Delete a blog post
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const { slug, id } = params;
@@ -137,7 +128,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get the enterprise for this slug
     const enterprise = await db.query.entreprise.findFirst({
       where: eq(entreprise.slug, slug),
     });
@@ -146,12 +136,10 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       return new NextResponse("Enterprise not found", { status: 404 });
     }
 
-    // Verify the user is the owner of this enterprise
     if (enterprise.userId !== session.user.id) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    // Check if the blog post exists and belongs to this enterprise
     const existingPost = await db.query.blog.findFirst({
       where: and(
         eq(blog.id, parseInt(id)),
@@ -163,7 +151,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       return new NextResponse("Blog post not found", { status: 404 });
     }
 
-    // Delete the blog post
     await db.delete(blog).where(eq(blog.id, parseInt(id)));
 
     return new NextResponse(null, { status: 204 });

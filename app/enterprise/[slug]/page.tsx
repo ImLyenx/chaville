@@ -20,7 +20,6 @@ async function getEnterpriseData(
   const response = await fetch(
     `http://localhost:3000/api/enterprise/${encodeURIComponent(slug)}`,
     {
-      // Add cache: 'no-store' to prevent caching
       cache: "no-store",
     }
   );
@@ -34,7 +33,6 @@ async function getEnterpriseData(
 
   const data = await response.json();
 
-  // Transform coordonnees into socials array with proper labels
   const socials = data.coordonnees.map(
     (coord: { type: string; link: string }) => {
       const type = coord.type.toLowerCase();

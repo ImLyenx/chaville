@@ -8,7 +8,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { images: imagesList } = body;
 
-    // Create the image records
     await db.insert(images).values(
       imagesList.map(
         (image: { url: string; alternatif: string; entrepriseId: string }) => ({

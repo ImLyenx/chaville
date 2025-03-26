@@ -8,7 +8,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { coordonnees: coordonneesList } = body;
 
-    // Create the coordonnees records
     await db.insert(coordonnees).values(
       coordonneesList.map(
         (coordonnee: {

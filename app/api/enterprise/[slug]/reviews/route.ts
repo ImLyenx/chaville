@@ -12,7 +12,6 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    // Get enterprise ID from slug
     const [enterprise] = await db
       .select({ id: entreprise.id })
       .from(entreprise)
@@ -25,7 +24,6 @@ export async function GET(
       );
     }
 
-    // Fetch reviews with user information
     const reviewsList = await db
       .select({
         id: reviews.id,
@@ -55,7 +53,6 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    // console.log("Received request for slug:", slug);
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -64,7 +61,6 @@ export async function POST(
       );
     }
 
-    // Get enterprise ID from slug
     console.log("Looking for enterprise with slug:", slug);
     const query = db
       .select({ id: entreprise.id })
@@ -85,7 +81,6 @@ export async function POST(
 
     const { rating, comment } = await request.json();
 
-    // Validate rating
     if (!rating || rating < 1 || rating > 5) {
       return NextResponse.json(
         { error: "La note doit être comprise entre 1 et 5" },
@@ -93,7 +88,6 @@ export async function POST(
       );
     }
 
-    // Check if user has already reviewed this enterprise
     const [existingReview] = await db
       .select()
       .from(reviews)
@@ -111,7 +105,6 @@ export async function POST(
       );
     }
 
-    // Create the review
     await db.insert(reviews).values({
       id: uuidv4(),
       rating,

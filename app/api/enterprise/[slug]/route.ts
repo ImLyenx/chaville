@@ -13,7 +13,6 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    // Fetch enterprise data with related user info
     const [enterpriseData] = await db
       .select({
         id: entreprise.id,
@@ -39,7 +38,6 @@ export async function GET(
       );
     }
 
-    // Fetch enterprise images
     const enterpriseImages = await db
       .select({
         url: images.url,
@@ -48,7 +46,6 @@ export async function GET(
       .from(images)
       .where(eq(images.entrepriseId, enterpriseData.id));
 
-    // Fetch contact information
     const contactInfo = await db
       .select({
         type: coordonnees.type,
@@ -57,7 +54,6 @@ export async function GET(
       .from(coordonnees)
       .where(eq(coordonnees.entrepriseId, enterpriseData.id));
 
-    // Fetch reviews data
     const [reviewsData] = await db
       .select({
         avgRating: sql<number>`CAST(AVG(${reviews.rating}) AS DECIMAL(2,1))`,
@@ -75,16 +71,13 @@ export async function GET(
       .from(reviews)
       .where(eq(reviews.entrepriseId, enterpriseData.id));
 
-    // Filter social links from contact info
     const socials = contactInfo.filter(
       (info) => info.type !== "phone" && info.type !== "email"
     );
 
-    // Get phone and email from contacts
     const phone = contactInfo.find((c) => c.type === "phone")?.link || "";
     const email = contactInfo.find((c) => c.type === "email")?.link || "";
 
-    // Prepare response data
     const responseData = {
       ...enterpriseData,
       photos: enterpriseImages.map((img) => img.url),
@@ -132,7 +125,6 @@ export async function PUT(
     const { slug } = await params;
     const body = await request.json();
 
-    // Fetch enterprise to check ownership
     const [enterprise] = await db
       .select({
         id: entreprise.id,
@@ -152,7 +144,6 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Update enterprise basic info
     await db
       .update(entreprise)
       .set({
@@ -163,11 +154,8 @@ export async function PUT(
       })
       .where(eq(entreprise.id, enterprise.id));
 
-    // Update photos
-    // First, delete all existing photos
     await db.delete(images).where(eq(images.entrepriseId, enterprise.id));
 
-    // Then, insert new photos with generated UUIDs
     if (body.photos && body.photos.length > 0) {
       await db.insert(images).values(
         body.photos.map((url: string) => ({
@@ -179,13 +167,10 @@ export async function PUT(
       );
     }
 
-    // Update contact info
-    // First, delete all existing contact info
     await db
       .delete(coordonnees)
       .where(eq(coordonnees.entrepriseId, enterprise.id));
 
-    // Then, insert new contact info with generated UUIDs
     if (body.coordonnees && body.coordonnees.length > 0) {
       await db.insert(coordonnees).values(
         body.coordonnees.map((contact: { type: string; link: string }) => ({

@@ -12,7 +12,6 @@ export async function getEnterprisesByUserIds(userIds: string[]) {
     .from(entreprise)
     .where(inArray(entreprise.userId, userIds));
 
-  // Create a map of user IDs to enterprises for easier lookup
   const userEnterprisesMap = new Map();
   enterprises.forEach((enterprise) => {
     const userId = enterprise.userId;
@@ -37,10 +36,8 @@ export async function updateEnterpriseValidation(
     throw new Error("Unauthorized: Only admins can validate enterprises");
   }
 
-  // Update the enterprise validation status
   await db.update(entreprise).set({ isValidated }).where(eq(entreprise.id, id));
 
-  // Fetch the updated enterprise to confirm the changes
   const updatedEnterprise = await db
     .select()
     .from(entreprise)

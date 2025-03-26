@@ -42,7 +42,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
     <div className="border-b border-gray-200 bg-white p-2">
       <div className="flex items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          {/* Text style buttons */}
           <Button
             variant="ghost"
             size="sm"
@@ -87,7 +86,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
           {/* Divider */}
           <div className="w-px h-4 bg-gray-200" />
 
-          {/* Heading buttons */}
           <Button
             variant="ghost"
             size="sm"
@@ -116,7 +114,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
           {/* Divider */}
           <div className="w-px h-4 bg-gray-200" />
 
-          {/* List buttons */}
           <Button
             variant="ghost"
             size="sm"
@@ -134,7 +131,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <ListOrdered className="h-4 w-4" />
           </Button>
 
-          {/* Block style buttons */}
           <Button
             variant="ghost"
             size="sm"
@@ -159,10 +155,8 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Minus className="h-4 w-4" />
           </Button>
 
-          {/* Divider */}
           <div className="w-px h-4 bg-gray-200" />
 
-          {/* History buttons */}
           <Button
             variant="ghost"
             size="sm"
@@ -180,7 +174,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Redo className="h-4 w-4" />
           </Button>
 
-          {/* Image upload */}
           <div className="flex items-center gap-2 border-l pl-2">
             <EditorUploadButton onUploadComplete={addImage} />
           </div>
@@ -195,7 +188,7 @@ const Tiptap = ({ initialContent, onUpdate }: TiptapProps) => {
     extensions: [
       StarterKit.configure({
         heading: {
-          levels: [2, 3], // Only allow h2 and h3
+          levels: [2, 3],
         },
       }),
       Underline,

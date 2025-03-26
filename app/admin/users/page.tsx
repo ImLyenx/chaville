@@ -66,7 +66,6 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 
-// Define the Enterprise type
 interface Enterprise {
   id: string;
   name: string;
@@ -76,7 +75,6 @@ interface Enterprise {
   slug: string;
 }
 
-// Update the User interface
 interface User {
   id: string;
   name?: string;
@@ -93,7 +91,6 @@ interface UserResponse {
 
 const ITEMS_PER_PAGE = 10;
 
-// Add sectors constant
 const SECTORS = [
   "Restauration",
   "Commerce",
@@ -150,11 +147,9 @@ export default function UsersPage() {
     throw new Error("Failed to fetch users");
   };
 
-  // Add filter function
   const filterUsers = (users: User[]) => {
     let filteredUsers = [...users];
 
-    // Sort unvalidated enterprises first
     filteredUsers.sort((a, b) => {
       if (a.enterprise?.isValidated === b.enterprise?.isValidated) return 0;
       if (!a.enterprise?.isValidated) return -1;
@@ -162,7 +157,6 @@ export default function UsersPage() {
       return 0;
     });
 
-    // Filter by validation status
     if (selectedValidation !== "all") {
       filteredUsers = filteredUsers.filter((user) => {
         if (selectedValidation === "validated") {
@@ -178,7 +172,6 @@ export default function UsersPage() {
       });
     }
 
-    // Filter by sector
     if (selectedSector !== "all") {
       filteredUsers = filteredUsers.filter(
         (user) => user.enterprise?.sector === selectedSector
@@ -240,7 +233,6 @@ export default function UsersPage() {
         userId,
         role: newRole,
       });
-      // Refresh the users list
       const { users: updatedUsers } = await fetchUsersWithEnterprises({
         limit: ITEMS_PER_PAGE,
         offset: (currentPage - 1) * ITEMS_PER_PAGE,
@@ -260,7 +252,6 @@ export default function UsersPage() {
       } else {
         await authClient.admin.unbanUser({ userId });
       }
-      // Refresh the users list
       const { users: updatedUsers } = await fetchUsersWithEnterprises({
         limit: ITEMS_PER_PAGE,
         offset: (currentPage - 1) * ITEMS_PER_PAGE,
@@ -278,10 +269,8 @@ export default function UsersPage() {
     isValidated: boolean
   ) => {
     try {
-      // Call the function without storing the result
       await updateEnterpriseValidation(enterpriseId, isValidated);
 
-      // Update the users list to reflect the change
       setUsers((prevUsers) =>
         prevUsers.map((user) => {
           if (user.enterprise?.id === enterpriseId) {
@@ -328,7 +317,6 @@ export default function UsersPage() {
 
           {Array.from({ length: totalPages }, (_, i) => i + 1)
             .filter((pageNum) => {
-              // Show first page, last page, current page, and pages around current
               return (
                 pageNum === 1 ||
                 pageNum === totalPages ||
@@ -336,7 +324,6 @@ export default function UsersPage() {
               );
             })
             .map((pageNum, index, array) => {
-              // If there's a gap, show ellipsis
               if (index > 0 && array[index - 1] !== pageNum - 1) {
                 return (
                   <Fragment key={`ellipsis-${pageNum}`}>
@@ -383,7 +370,6 @@ export default function UsersPage() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>Gestion des Utilisateurs</CardTitle>
           <div className="flex items-center gap-4">
-            {/* Filters */}
             <div className="hidden md:flex items-center gap-4">
               <Select
                 value={selectedValidation}
@@ -420,7 +406,6 @@ export default function UsersPage() {
               />
             </div>
 
-            {/* Mobile filters button */}
             <div className="md:hidden">
               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                 <DrawerTrigger asChild>
@@ -587,7 +572,6 @@ export default function UsersPage() {
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
 
-                            {/* Role Change Option */}
                             <DropdownMenuItem
                               onClick={() =>
                                 handleRoleChange(
@@ -602,7 +586,6 @@ export default function UsersPage() {
                                 : "Donner droits admin"}
                             </DropdownMenuItem>
 
-                            {/* Ban/Unban Option */}
                             <DropdownMenuItem
                               onClick={() =>
                                 handleBanUser(user.id, !user.banned)
@@ -621,7 +604,6 @@ export default function UsersPage() {
                               )}
                             </DropdownMenuItem>
 
-                            {/* Enterprise Validation/Unvalidation Option */}
                             {user.enterprise && (
                               <DropdownMenuItem
                                 onClick={() =>
