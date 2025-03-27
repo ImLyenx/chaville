@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chaville
 
-## Getting Started
+Ce projet est une application web développée avec [Next.js](https://nextjs.org) pour la ville de Chaville, créée avec [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-First, run the development server:
+## Fonctionnalités
+
+- **Page d'accueil** : Présentation des actualités et catégories de commerçants
+- **Espace commerçants** : Découverte des commerces locaux
+- **Blog** : Articles et actualités de la ville
+- **Espace entreprise** : Informations pour les entreprises locales
+- **Espace administratif** : Gestion du contenu du site
+- **Système d'authentification** : Inscription et connexion des utilisateurs
+- **Formulaire de contact** : Communication avec la mairie
+- **Mode clair/sombre** : Interface adaptable aux préférences utilisateur
+- **Carrousels d'images** : Présentation visuelle des contenus
+
+## Technologies utilisées
+
+- **Frontend** : Next.js 15, React 19, TailwindCSS
+- **UI Components** : Shadcn UI
+- **Formulaires** : React Hook Form, Zod
+- **Éditeur de texte riche** : TipTap
+- **Base de données** : MySQL avec Drizzle ORM
+- **Upload de fichiers** : UploadThing
+- **Emails** : Resend
+
+## Installation
+
+1. Clonez le dépôt
+2. Installez les dépendances :
+
+```bash
+npm install
+# ou
+yarn install
+# ou
+pnpm install
+# ou
+bun install
+```
+
+3. Configurez les variables d'environnement (créez un fichier `.env` basé sur les besoins de la base de données)
+
+```env
+BETTER_AUTH_SECRET="XXXXXXXX"
+BETTER_AUTH_URL=http://localhost:3000 #Base URL of your app
+MYSQL_DATABASE_URL=mysql://root:@localhost:3306/chaville
+RESEND_API_KEY=re_XXXXXXXX
+RESEND_FROM_EMAIL=mail@example.com
+UPLOADTHING_TOKEN=eyJ.......
+
+```
+
+4. Initialisez la base de données :
+
+```bash
+npm run db:push
+# ou
+pnpm db:push
+```
+
+## Démarrage
+
+Lancez le serveur de développement :
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
-# or
+# ou
 pnpm dev
-# or
+# ou
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur pour voir le résultat.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vous pouvez commencer à éditer le site en modifiant `app/page.tsx`. La page se met à jour automatiquement à mesure que vous éditez le fichier.
